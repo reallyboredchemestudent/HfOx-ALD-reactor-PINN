@@ -7,6 +7,66 @@ extrapolate 315 real thickness measurements from Lee et al. (2026). Two inverse 
 terms, a finite-volume adjoint solver and a physics-informed neural network (PINN), and the calibrated model gives a
 process window.
 
+## Scope and design philosophy
+
+**The question.** How much of a real ALD process map can a few physical mechanisms explain, and what is left for
+data to learn? Lee et al. fit the map with a neural network. It works inside the measured window, but it has no
+physics: outside the window it predicts growth at a 50 °C source, where there is too little vapour to grow
+anything. If physics carries the map's structure instead, three things follow. Fewer wafers are needed to map a
+window, predictions outside it respect hard limits, and the fitted numbers mean something chemically.
+
+**Five physical facts set the film.** Everything here rests on them:
+
+1. **Vapour pressure sets the dose.** TDMA-Hf vapour pressure rises steeply with temperature: about 40% more dose
+   per 5 °C of source temperature. This predicts a sharp threshold below which the dose cannot cover the wafer.
+2. **A surface accepts only so much.** Each pulse reacts with surface –OH sites and then stops. A hotter surface
+   holds fewer sites, so saturated growth falls from 1.50 Å/cycle at 100 °C to 1.10 Å/cycle at 250 °C.
+3. **Precursor is used up as it flows.** Every site the gas passes takes a molecule, so a short dose stops at a
+   front. Front reach ≈ dose ÷ (site density × flow width), so the front reaches further on a hotter wafer.
+4. **Transport blurs the edge.** The diffusion length (0.4–1.6 cm) is the size of the front width, so front width
+   cannot be read as a sticking probability on its own.
+5. **The instrument reports a model, not atoms.** Below about 5 nm, ellipsometry trades thickness against
+   refractive index: a 0.02° calibration offset turns a real 2 nm film into a reported 3.3 nm. Thin films carry
+   systematic, correlated errors.
+
+**Design choices**
+
+| Choice | Why | Rejected |
+| --- | --- | --- |
+| A mechanistic core with interpretable parameters | Facts 1–3 give the structure; 4 inputs and 35 wafers cannot support thousands of free weights | A larger neural network, which has to be shown runs at a 50 °C source to learn "no vapour, no growth" |
+| Count wafers, not sites | The 9 sites on a wafer share one dose, one calibration and one chamber state; every test holds out whole wafers, and each wafer gets its own dose offset | Random splits of sites, which leak a wafer's own sites from training into testing |
+| Model the instrument inside the fit | Fact 5: thin films enter through a simulation of the ellipsometry fit | A fitted "thin-film correction" term, which absorbs part of the real temperature trend |
+| Measure the error budget, don't assume it | The textbook budget gives χ² 21,124 on 225 sites; the site signature and run-to-run scatter measured on the saturated wafers give 448 | Inflating error bars until the fit looks good |
+| Reduce the pulsed reactor exactly to a steady exposure equation, solved in 2D by a finite-volume adjoint inverse | Fact 4 and the left/right asymmetry say 2D matters; the reduction makes the 2D problem steady | A PINN as the main solver. It is built for the same equation and kept as a cross-check |
+| No sticking probability from front width | Fact 4: diffusion sets the width as much as surface chemistry does | An earlier "activated sticking" result, now withdrawn |
+| Fix the candidate mechanisms and the adoption rule before refitting | With 35 wafers, adding terms one at a time and keeping what helps finds patterns in noise | Term-by-term selection by AIC, which counts 315 sites as independent evidence |
+
+**Adoption rule.** A candidate mechanism enters the model only if it predicts held-out wafers clearly better, its
+parameters can be recovered from simulated data, and its fitted sign makes physical sense.
+
+**How we will know it is right.** A result counts only when something other than us confirms it. The checks run from
+cheapest and weakest to most expensive and strongest, and each one can fail the work.
+
+| Check | Status |
+| --- | --- |
+| 1. Recover a known answer from simulated data | Done here: `recovery.py`, `profile_lik.py`, SI.jl |
+| 2. Predict wafers the fit never saw | Done here: hold-out and 225–250 °C extrapolation |
+| 3. Fitted numbers physically possible (dose, residence time, diffusion) | Dose check passed; sticking from front width failed and was withdrawn |
+| 4. Parameters agree with other labs' TDMA-Hf/H₂O results | Planned |
+| 5. An independent solver agrees | Done here: aldFoam (OpenFOAM-10) |
+| 6. A different instrument agrees (XRR for thickness and density, XPS for residual C and N) | Needs new measurements |
+| 7. The reactor agrees with a prediction made in advance | Three blind runs designed (below); predictions to be posted with a timestamp first |
+| 8. The people who made the data agree with our reading | In progress: shared with Lee et al. before any preprint |
+
+**Three blind runs.** 100 °C deposition at a 60 °C source with the pulse stepped from 0.05 to 0.4 s separates
+reversible surface holdup from real extra growth. A 57.5 °C source at 150 °C tests whether mass balance places the
+front between the 55 and 60 °C cases. A repeat of 55 °C at 150 °C tests whether that run's unusually sharp front
+was a one-off.
+
+**What this release covers.** The steady-exposure transport model, its checks, the thickness fits under the measured
+error budget, the PINN comparison and the process window. Not yet included: the refractive-index and wet-etch
+density model, the reproduction of Lee et al.'s network, and the Bayesian model-discrepancy (Kennedy–O'Hagan) term.
+
 **Main results**
 
 - **The reduction is exact.** It holds whenever the gas reacts first order at the wall, the flow is steady and the
