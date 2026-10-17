@@ -6,7 +6,7 @@
 #        recal pinnm comparem   (FV and PINN with the error budget measured on the saturated wafers: budget.py)
 #        window                 (process window from the calibrated FV fit: run after recal)
 # Settings (environment): CSV=path/to.csv  REGIME=100-200  JOBS=<parallel fits>  SEEDS=0-9
-set -u
+set -euo pipefail      # stop at the first failed step: a later step must never run on a missing or failed input
 ROOT="$(cd "$(dirname "$0")" && pwd)"; CODE="$ROOT/code"; RES="$ROOT/results"; LOGS="$RES/logs"; mkdir -p "$LOGS"
 CSV="${CSV:-$ROOT/data/lee2026_hfox_ald_dataset.csv}"
 REGIME="${REGIME:-100-200}"     # deposition temperatures used for fitting; revisit after reading results/collapse_summary.txt
@@ -18,8 +18,9 @@ STEPS="${*:-check selfcheck synthpinn load collapse fit howo extrap pinn compare
 run() {   # run <log name> <command...>   (inside code/, output to screen and log)
   local name=$1; shift
   echo; echo "=== $name: $*"; local t0=$SECONDS
-  ( cd "$CODE" && "$@" ) 2>&1 | tee "$LOGS/$name.log"; local rc=${PIPESTATUS[0]}
-  echo "=== $name finished in $(( SECONDS - t0 )) s (exit $rc)" | tee -a "$LOGS/$name.log"; return $rc
+  set +e; ( cd "$CODE" && "$@" ) 2>&1 | tee "$LOGS/$name.log"; local rc=${PIPESTATUS[0]}; set -e
+  echo "=== $name finished in $(( SECONDS - t0 )) s (exit $rc)" | tee -a "$LOGS/$name.log"
+  if [ "$rc" -ne 0 ]; then echo "=== STOPPED: step '$name' failed (exit $rc); log: $LOGS/$name.log" >&2; exit "$rc"; fi
 }
 
 for s in $STEPS; do
@@ -27,8 +28,9 @@ for s in $STEPS; do
     check)     run check python check_install.py ;;
     selfcheck) run selfcheck python pinn_jax.py selfcheck ;;
     synthpinn) # JAX PINN on synthetic set A: must reproduce (or beat) the NumPy PINN numbers already in the doc
-               run synthpinn python pinn_jax.py run --data synthA_rep0.npz --tag JA --seeds 0-4 --holds=-1,0,15,30 --jobs "$JOBS" --out "$CODE"
-               run synthcompare python compare.py A 0,1,2,3,4 0,15,30 JA ;;
+               mkdir -p "$RES/synth"
+               run synthpinn python pinn_jax.py run --data synthA_rep0.npz --tag JA --seeds 0-4 --holds=-1,0,15,30 --jobs "$JOBS" --out "$RES/synth"
+               run synthcompare python compare.py A 0,1,2,3,4 0,15,30 JA "$RES/synth" ;;
     load)      [ -f "$CSV" ] || { echo "dataset not found at $CSV (set CSV=...)"; exit 1; }
                run load python data_real.py "$CSV"
                echo ">>> read results/load_report.txt before going on (columns, units, flow direction, site map, cycles)" ;;
@@ -48,8 +50,8 @@ for s in $STEPS; do
     window)    run window python process_window.py --jobs "$JOBS" ;;
     julia)     if command -v julia > /dev/null; then run julia julia identifiability.jl && cp "$CODE/si_results.txt" "$RES/"
                else echo "julia not on PATH: skipping (see SETUP.md section 3)"; fi ;;
-    collect)   cp "$CODE"/pinn_JA_*.npz "$CODE"/compare_A_JA.npy "$RES/" 2>/dev/null
-               ( cd "$ROOT" && python -m zipfile -c results_to_send.zip results ) && echo "send back: $ROOT/results_to_send.zip" ;;
+    collect)   ( cd "$ROOT" && python -m zipfile -c results.zip results ) && echo "archived: $ROOT/results.zip" ;;
     *)         echo "unknown step $s"; exit 1 ;;
   esac
 done
+echo; echo "all steps finished without error: $STEPS"

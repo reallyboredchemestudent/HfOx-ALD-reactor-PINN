@@ -3,6 +3,7 @@ __pycache__/
 results/*
 !results/.gitkeep
 results_to_send.zip
+results.zip
 code/si_results.txt
 code/pinn_*_s*_h*.npz
 code/pinnjax_pre_*.npy

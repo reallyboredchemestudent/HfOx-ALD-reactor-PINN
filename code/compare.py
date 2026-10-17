@@ -1,15 +1,19 @@
-"""Usage: python compare.py <A|B> <seeds 0,1,..> <holds 0,15,30> [pinn tag, e.g. JA]
+"""Usage: python compare.py <A|B> <seeds 0,1,..> <holds 0,15,30> [pinn tag, e.g. JA, or NONE for FV only] [pinn dir]
 Finite-volume adjoint inverse vs PINN on hold-one-wafer-out (55 C wafers at 100, 175, 250 C), same data.
 Intervals for both: epistemic part (FV: Laplace; PINN: deep-ensemble spread) + the held-out run's unknown dose,
-sampled through the FV solver at each method's own fitted parameters (PINN: its learned inlet profile) + instrument."""
+sampled through the FV solver at each method's own fitted parameters (PINN: its learned inlet profile) + instrument.
+PINN files are read from [pinn dir] (default: the current directory) and the comparison is written there too.
+Exits 1 if a PINN tag other than NONE is given and no PINN file is found for any hold-out."""
 import numpy as np, sys, glob, warnings
 warnings.filterwarnings('ignore')
-from fvmodel import *
+from fvmodel import CONDS, forward
 import instrument as INS
 from fit import SIG_O
 from scipy.interpolate import interp1d
 tag = sys.argv[1]; seeds = [int(s) for s in sys.argv[2].split(',')]; holds = [int(h) for h in sys.argv[3].split(',')]
 ptag = sys.argv[4] if len(sys.argv) > 4 else tag     # PINN file tag: e.g. JA for the JAX PINN on synthetic set A
+pdir = sys.argv[5] if len(sys.argv) > 5 else '.'      # where the PINN files are (and where the comparison is written)
+n_found = 0
 Z = np.load(f'synth{tag}_rep0.npz'); Y = Z['Y']; TT = Z['T']
 FV = {r['hold']: r for r in np.load(f'howo_fv_{tag}.npy', allow_pickle=True)}
 rng = np.random.default_rng(11)
@@ -34,7 +38,8 @@ for h in holds:
     lo, hi, med = np.percentile(sims, 5, 0), np.percentile(sims, 95, 0), np.median(sims, 0)
     rows.append(('FV', h, np.sqrt(np.mean((obs-med)**2)), np.mean((obs>=lo)&(obs<=hi)), np.mean(hi-lo), np.sqrt(np.mean((np.median(D,0)-TT[h])**2))))
     # ---- PINN ensemble ----
-    files = [f'pinn_{ptag}_s{s}_h{h}.npz' for s in seeds if glob.glob(f'pinn_{ptag}_s{s}_h{h}.npz')]
+    files = [f'{pdir}/pinn_{ptag}_s{s}_h{h}.npz' for s in seeds if glob.glob(f'{pdir}/pinn_{ptag}_s{s}_h{h}.npz')]
+    n_found += len(files)
     CHI2_MAX = float(__import__('os').environ.get('CHI2_MAX', 330))      # screen failed members (data chi2 of ~306 points)
     kept = [f for f in files if float(np.load(f)['comp'][2]) < CHI2_MAX]
     print(f"hold {CONDS[h]}: {len(kept)} of {len(files)} PINN members with data chi2 < {CHI2_MAX:g}"); files = kept
@@ -54,4 +59,6 @@ for h in holds:
     lo, hi, med = np.percentile(sims, 5, 0), np.percentile(sims, 95, 0), np.median(sims, 0)
     rows.append((f'PINN x{len(files)}', h, np.sqrt(np.mean((obs-med)**2)), np.mean((obs>=lo)&(obs<=hi)), np.mean(hi-lo), np.sqrt(np.mean((preds.mean(0)-TT[h])**2))))
 for row in rows: print(f"{row[0]:8s} hold {CONDS[row[1]]}: RMSE vs reported {row[2]:.2f} nm, vs true film {row[5]:.2f} nm, inside 90% {row[3]:.2f}, mean width {row[4]:.2f} nm")
-np.save(f'compare_{tag}{"" if ptag == tag else "_" + ptag}.npy', np.array(rows, dtype=object), allow_pickle=True)
+np.save(f'{pdir}/compare_{tag}{"" if ptag == tag else "_" + ptag}.npy', np.array(rows, dtype=object), allow_pickle=True)
+if ptag.upper() != 'NONE' and n_found == 0:
+    sys.exit(f"compare.py: no PINN files pinn_{ptag}_s*_h*.npz in {pdir}: the PINN step did not run or wrote elsewhere")
