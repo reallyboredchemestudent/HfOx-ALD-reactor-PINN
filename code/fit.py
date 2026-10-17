@@ -1,7 +1,7 @@
 import numpy as np, warnings, time
 warnings.filterwarnings('ignore')
 from scipy.optimize import least_squares
-from fvmodel import *
+from fvmodel import CONDS, NAMES, TRUTH_A, forward
 import instrument as INS
 SIG_O = 0.05
 SIG_B = 0.06   # run-level instrument shift (nm), shared by a wafer's 9 sites
@@ -66,7 +66,9 @@ def fit(Y, p0, mask=None, fixed=None, Nx=30, Ny=96, verbose=0, max_nfev=40):
 if __name__ == '__main__':
     rng = np.random.default_rng(0)
     Y, T, off = make_data(TRUTH_A, rng)
-    np.savez('synthA_rep0.npz', Y=Y, T=T, off=off)
+    import os   # code/synthA_rep0.npz is a shipped input (check_install.py, the goldens): write the regenerated set to results/
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'results', 'synthA_rep0.npz'); os.makedirs(os.path.dirname(out), exist_ok=True)
+    np.savez(out, Y=Y, T=T, off=off); print(f"wrote {os.path.normpath(out)} (compare with code/synthA_rep0.npz)")
     p0 = PRIOR_MU.copy(); p0[0] = np.log(22); p0[1] = np.log(1.2); p0[5] = 0.0; p0[6] = 0.0
     t = time.time(); r = fit(Y, p0, verbose=0)
     sd = np.sqrt(np.diag(r['cov'])[:9])
