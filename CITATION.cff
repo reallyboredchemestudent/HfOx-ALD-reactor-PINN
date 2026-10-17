@@ -8,7 +8,7 @@ authors:
 version: 0.1.0
 date-released: 2026-10-17
 license: MIT
-repository-code: "https://github.com/<your-username>/hfox-steady-exposure"
+repository-code: "https://github.com/reallyboredchemestudent/hfox-steady-exposure"
 keywords: [atomic layer deposition, physics-informed neural network, inverse problems, HfO2, process window]
 references:
   - type: article
