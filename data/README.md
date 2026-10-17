@@ -23,5 +23,9 @@ inlet, (0, 10.5) cm farthest. x runs across the flow. Map bottom is the inlet si
 there). Site numbers follow the map reading order: top, row 2 left/right, row 3 left/centre/right, row 4 left/right,
 bottom. The sign of x (map left = −x) is an assumption; it only flips the sign of the fitted inlet tilt.
 
-**Rights.** The measurements are the authors'. Check the article's licence on its web page before redistributing
-this file, and cite the article whenever it is used.
+**Rights.** The measurements are the authors'. The article, including its Supplementary Information, is published
+under a Creative Commons Attribution 4.0 International License (CC BY 4.0,
+https://creativecommons.org/licenses/by/4.0/), which permits redistribution with attribution. This file is
+redistributed under that licence. Changes from the source: values were read from Supplementary Fig. 1 and
+tabulated (see Transcription above); no values were altered. Cite the article whenever this file is used.
+The repository's MIT licence covers the code only, not this dataset.
