@@ -1,0 +1,27 @@
+# Data provenance
+
+`lee2026_hfox_ald_dataset.csv` contains the 315 measured sites of
+
+> M. Lee, D. S. Kim, T. T. H. Chu, D. M. Narayan, D. N. Le, S. De, S. Shirodkar, S. Lee, S. Son, J. E. Kang, H. Choi,
+> S. J. Jeong, T. Kim, G. Y. Yeom, S. J. Kim and J. Kim, "Machine learning-guided optimization of atomic layer
+> deposition process", *Communications Materials* (2026). https://www.nature.com/articles/s43246-026-01206-w
+
+**Source.** Supplementary Fig. 1 of the article's Supplementary Information: wafer maps of (a) thickness,
+(b) refractive index at 633 nm and (c) wet etch rate in 500:1 HF, for 7 deposition temperatures (100–250 °C) × 5
+TDMA-Hf source temperatures (55–75 °C), 9 sites per 100 mm wafer. Process: Lucida D100, TDMA-Hf / H₂O, 100 cycles,
+0.2/20 s pulse/purge. The authors state the data are in the article and its Supplementary Information.
+
+**Transcription.** Every value was read by eye from 2× crops of the 4379 × 1837 px figure, then read again
+independently by OCR (tesseract 5.3.4). All 945 values agree digit for digit. Values are as printed: thickness to
+0.1 nm, refractive index to 0.01, wet etch rate to 0.1 nm/min (a few printed as 0.24–0.30 nm/min, kept as printed).
+
+**Columns.** Deposition temperature (°C), precursor temperature (°C), site (1–9), x and y (cm), thickness (nm),
+RI, WER (nm/min), cycles.
+
+**Site coordinates.** y runs along the flow from the inlet-side origin used in the paper: (0, 4.5) cm is nearest the
+inlet, (0, 10.5) cm farthest. x runs across the flow. Map bottom is the inlet side (the 55 °C-source wafers are thick
+there). Site numbers follow the map reading order: top, row 2 left/right, row 3 left/centre/right, row 4 left/right,
+bottom. The sign of x (map left = −x) is an assumption; it only flips the sign of the fitted inlet tilt.
+
+**Rights.** The measurements are the authors'. Check the article's licence on its web page before redistributing
+this file, and cite the article whenever it is used.

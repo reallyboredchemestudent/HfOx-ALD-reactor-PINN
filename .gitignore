@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+results/*
+!results/.gitkeep
+results_to_send.zip
+code/si_results.txt
+code/pinn_*_s*_h*.npz
+code/pinnjax_pre_*.npy
+code/compare_*.npy
+code/profile_*.npy
+code/recovery_*.npy
+code/break_*.npz
+code/breakfit_*.npz
+*.log

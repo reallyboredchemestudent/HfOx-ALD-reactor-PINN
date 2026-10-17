@@ -1,0 +1,42 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  Parallel-plate channel for the aldFoam check (gap 0.5 cm, 24 cm long, 2-D: one cell deep).
+  Patches: inlet (x = 0), outlet (x = 24 cm), bottom and top (reactive walls), frontAndBack (empty).
+  Copy to <case>/system/blockMeshDict. If the aldFoam example uses other patch names, rename them here
+  (or in every file of <case>/0) so the two agree.
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+convertToMeters 0.01;     // coordinates below are in cm
+
+vertices
+(
+    (0  0    0)
+    (24 0    0)
+    (24 0.5 0)
+    (0  0.5 0)
+    (0  0    0.1)
+    (24 0    0.1)
+    (24 0.5 0.1)
+    (0  0.5 0.1)
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (480 20 1) simpleGrading (1 1 1)
+);
+
+boundary
+(
+    inlet        { type patch; faces ((0 4 7 3)); }
+    outlet       { type patch; faces ((1 2 6 5)); }
+    bottom       { type wall;  faces ((0 1 5 4)); }
+    top          { type wall;  faces ((3 7 6 2)); }
+    frontAndBack { type empty; faces ((0 3 2 1) (4 5 6 7)); }
+);
+
+// ************************************************************************* //

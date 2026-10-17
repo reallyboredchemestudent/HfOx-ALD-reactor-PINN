@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below, together with the data source (Lee et al. 2026)."
+title: "Time-free modelling of a pulsed ALD reactor: HfO2 from TDMA-Hf / H2O"
+authors:
+  - family-names: Mouly
+    given-names: Rayan
+    affiliation: "University of Illinois Urbana-Champaign"
+version: 0.1.0
+date-released: 2026-10-17
+license: MIT
+repository-code: "https://github.com/<your-username>/hfox-steady-exposure"
+keywords: [atomic layer deposition, physics-informed neural network, inverse problems, HfO2, process window]
+references:
+  - type: article
+    title: "Machine learning-guided optimization of atomic layer deposition process"
+    authors:
+      - family-names: Lee
+        given-names: Minjong
+      - name: "et al."
+    journal: "Communications Materials"
+    year: 2026
+    url: "https://www.nature.com/articles/s43246-026-01206-w"
