@@ -7,7 +7,7 @@
   python run_real.py compare  [--tag REAL]     FV vs JAX-PINN ensemble on the held-out wafers (after pinn_jax.py)
 
 Common options: --npz ../results/real_Y.npz (from data_real.py), --out ../results, --jobs N (parallel fits).
-Every command writes CSV/JSON into --out and prints a short summary; send the whole results folder back.
+Every command writes CSV/JSON into --out and prints a short summary.
 """
 import os, sys, json, argparse, time, warnings
 import numpy as np, multiprocessing
@@ -26,16 +26,19 @@ ap.add_argument('--holds', default='55', help="howo: '55' = the 55 C wafers in -
 ap.add_argument('--jobs', type=int, default=max(1, (os.cpu_count() or 2)//2))
 ap.add_argument('--tag', default='REAL'); ap.add_argument('--seeds', default='0-9')
 ap.add_argument('--quick', action='store_true', help='coarse grid and few iterations (smoke test only)')
+ap.add_argument('--start', choices=['collapse', 'prior'], default='collapse',
+                help="fit/howo/extrap start: 'collapse' needs <out>/collapse_summary.json from the collapse step (the run_all.sh order); "
+                     "'prior' ignores it. The two give different fits (chi2 21,169 vs 21,046 on 100-200 C), so the choice is explicit")
 A = ap.parse_args()
 
 Z = np.load(A.npz, allow_pickle=True)
 os.environ['ALD_NCYC'] = str(float(Z['ncyc']))           # must be set before the model modules are imported
 for k in ('OMP_NUM_THREADS', 'OPENBLAS_NUM_THREADS', 'MKL_NUM_THREADS'): os.environ.setdefault(k, '1')
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fvmodel as FV
 FV.SITES[:] = Z['sites']                                  # real site positions (in place: every module sees them)
 import instrument as INS
 import fit as F
+FV.require_ncyc(Z['ncyc'])
 from scipy.optimize import least_squares
 Y = Z['Y']; CONDS = FV.CONDS; TD, TP = FV.TD, FV.TP
 os.makedirs(A.out, exist_ok=True)
@@ -192,10 +195,13 @@ def init_params():
     """Start the FV fit from the model-light collapse result when available (reach at 175 C, U, GPC law)."""
     p0 = F.PRIOR_MU.copy(); p0[0] = np.log(22); p0[1] = np.log(1.2)
     f = os.path.join(A.out, 'collapse_summary.json')
+    if A.start == 'collapse' and not os.path.exists(f):
+        sys.exit(f"{A.cmd}: starts from the collapse result {f}, which does not exist. Run `run_real.py collapse` first "
+                 "(run_all.sh does), or pass --start prior. The fitted numbers depend on this choice.")
     sat = np.array([np.nanmedian(Y[CONDS.index((t, 75.0))]) for t in TD])
     g = np.array([t_true_from_reported(s) for s in sat])*10/float(Z['ncyc'])
     sl = np.polyfit((TD - 175)/75, g, 1); p0[7], p0[8] = sl[1], sl[0]
-    if os.path.exists(f):
+    if A.start == 'collapse':
         c = json.load(open(f)); gp175 = np.interp(175, TD, np.array(c['gpc']))
         p0[0] = np.log(np.clip(c['C']/gp175, 4, 70)); p0[4] = float(np.clip(c['U'], 0.5, 29))
     return np.clip(p0, F.LB + 1e-6, F.UB - 1e-6)
@@ -229,7 +235,7 @@ def fit_cmd():
     per = np.nansum(np.where(np.isfinite(res), res, 0)**2, 1)
     out = dict(params=dict(zip(FV.NAMES, r['p'])), sd=dict(zip(FV.NAMES, sd)), corr=corr, names=FV.NAMES, chi2_data=r['chi2_data'],
                ndata=r['ndata'], dose_offsets=r['o'], instrument_offsets=r['b'], starts_cost=[a['cost'] for a in allr], seconds=time.time() - t0,
-               used_runs=[CONDS[i] for i in range(35) if mask[i]], grid=[NX, NY], ncyc=float(Z['ncyc']))
+               used_runs=[CONDS[i] for i in range(35) if mask[i]], grid=[NX, NY], ncyc=float(Z['ncyc']), start=A.start)
     save_json(f'fit_{tag}.json', out)
     import csv
     with open(os.path.join(A.out, f'per_wafer_{tag}.csv'), 'w', newline='') as f:
@@ -346,7 +352,7 @@ def compare_cmd():
         preds = np.array(preds); D = np.concatenate(sims_all); ens_var = preds.var(0, ddof=1) if len(preds) > 1 else np.zeros(9)
         m, s, _ = INS.marginal(D); sims = m + rng.normal(0, 1, m.shape)*np.sqrt(s**2 + ens_var)
         lo, hi, med = np.percentile(sims, 5, 0), np.percentile(sims, 95, 0), np.median(sims, 0)
-        rows.append((f'PINN', h, np.sqrt(np.mean((obs - med)[ok]**2)), np.mean(((obs >= lo) & (obs <= hi))[ok]), np.mean((hi - lo)[ok]), len(good)))
+        rows.append(('PINN', h, np.sqrt(np.mean((obs - med)[ok]**2)), np.mean(((obs >= lo) & (obs <= hi))[ok]), np.mean((hi - lo)[ok]), len(good)))
     import csv
     with open(os.path.join(A.out, f'compare_{A.tag}.csv'), 'w', newline='') as f:
         wr = csv.writer(f); wr.writerow(['method', 'Td', 'Tp', 'rmse_nm', 'inside90', 'mean_width_nm', 'n_members'])
