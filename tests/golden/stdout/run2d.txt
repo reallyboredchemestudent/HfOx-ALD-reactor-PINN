@@ -1,0 +1,5 @@
+grid 24x32: same-grid time vs steady max|dtheta| 1.1e-08 | gas left 9e-18 | <t>
+grid 48x64: same-grid time vs steady max|dtheta| 1.1e-08 | gas left 2e-17 | <t>
+time solve 24x32 vs finest steady: max|dtheta| 1.4e-03 (0.02 nm)
+time solve 48x64 vs finest steady: max|dtheta| 3.6e-04 (0.01 nm)
+lateral asymmetry at y=0.5: theta 0.09 (lean side) vs 0.94 (rich side)

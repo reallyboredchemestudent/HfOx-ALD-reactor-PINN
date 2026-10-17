@@ -1,0 +1,15 @@
+front fit: data chi2 3403.9 for 126 sites (103 dof)
+cross-flow front shape: tilt -0.401 cm/cm, curvature -0.2169 cm/cm^2 (shared by all temperatures)
+mass-balance line on [100.0, 125.0, 150.0, 175.0, 200.0] C: y_front = C/GPC - U with C = 12.48 +- 3.10 cm*A/cycle, U = 1.87 +- 2.37 cm (corr +1.00); chi2 1.15 on 3 dof (front sd from the fit plus run dose scatter 0.05 in log dose)
+run-to-run log-dose scatter implied by the regime residuals: 0.027 (model assumes 0.05)
+reach x GPC over the regime: CV 2.6 %, max deviation 4.0 % (0.43 cm)
+fronts not resolved on the wafer (transition outside the sites, or width/position degenerate; excluded from the line): 225, 250
+U here is an effective offset (logistic front vs mass-balance reach), not the PDE model's U
+Td   GPC(A/cyc) sat-wafer CV  front y (cm)    width (cm)    reach (cm)  reach*GPC  predicted front  dev (total sd)
+ 100     1.455      2.7 %    6.88 +- 0.08   0.35 +- 0.09     8.75     12.72       6.71       +0.3
+ 125     1.420      3.0 %    6.80 +- 0.08   0.61 +- 0.10     8.66     12.30       6.92       -0.2
+ 150     1.273      2.8 %    7.62 +- 0.21   0.23 +- 0.10     9.49     12.08       7.94       -0.6
+ 175     1.209      1.4 %    8.88 +- 0.24   0.85 +- 0.18    10.75     13.00       8.46       +0.6
+ 200     1.135      2.7 %    9.06 +- 0.14   0.44 +- 0.09    10.92     12.40       9.13       -0.1
+ 225     1.060      2.9 %   11.41 +- 2.66   0.52 +- 0.92    13.28     14.07       9.91       +0.5   (not resolved)
+ 250     0.990      2.6 %    3.85 +-  nan   0.00 +-  nan     5.72      5.66      10.74       +nan   (not resolved)

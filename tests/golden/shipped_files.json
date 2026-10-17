@@ -1,0 +1,18 @@
+{
+ "_provenance": {
+  "recorded_utc": "2026-10-17T18:13:18+00:00",
+  "commit": "053e81794ed02d30a04a9a4f0503bf40baad9aa5",
+  "python": "3.13.16",
+  "numpy": "2.5.3",
+  "scipy": "1.18.1",
+  "machine": "x86_64",
+  "system": "Linux"
+ },
+ "code/synthA_rep0.npz": "940606829f8f6f9e95ac1eb72ee0987fe77d2fdd25eeaed9a32884d58baad4fc",
+ "code/synthB_rep0.npz": "13d9792cf26bf35baee8c6d51a34780cb61856976a3f74403ad2819f8abdf519",
+ "code/howo_fv_A.npy": "3dadbc91fc721f112093182e264f5f79eb6f08d69d9e5e5be696f8c2900be10d",
+ "code/howo_fv_B.npy": "3912adc76a33df34a08133586063b8116b9b3d857cbf5a6f806daddf0b790115",
+ "code/v1_lookup.npz": "9055d2639e9b4a20af2f616f89481ff156263561ee8b2e710de484b53edf4341",
+ "code/check_install_expected.json": "a8e8830a14f205105e735c62f575bf5e032a4a6304058c15e4353f1b8cca4c22",
+ "data/lee2026_hfox_ald_dataset.csv": "a4d8c6b755e364552761864b7d5b3739ebd3050fa5dabeb8ae9aa142e7e29684"
+}

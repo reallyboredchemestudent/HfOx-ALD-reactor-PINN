@@ -1,0 +1,15 @@
+One 55 C wafer (100 C), continuous profile: log_lam, log_zb, log_l, U
+  singular values (normalized) [1.     0.8376 0.0651 0.0016]
+  weakest direction: {'log_lam': -0.707, 'log_zb': 0.0, 'log_l': 0.0, 'U': -0.707}
+Same, U fixed: log_lam, log_zb, log_l
+  singular values (normalized) [1.     0.6823 0.0696]
+  weakest direction: {'log_lam': -0.096, 'log_zb': 0.695, 'log_l': -0.712}
+Seven 55 C wafers + temperature laws: log_lam, log_zb, Ea, log_l, U
+  singular values (normalized) [1.     0.7515 0.4835 0.052  0.0337]
+  weakest direction: {'log_lam': -0.716, 'log_zb': 0.015, 'Ea': 0.032, 'log_l': -0.048, 'U': -0.696}
+Add the seven 60 C wafers
+  singular values (normalized) [1.     0.7183 0.4584 0.0575 0.0371]
+  weakest direction: {'log_lam': -0.688, 'log_zb': -0.164, 'Ea': 0.034, 'log_l': 0.132, 'U': -0.693}
+Hypothetical: add 50 C wafers (dose-equivalence / lower dose)
+  singular values (normalized) [1.     0.8435 0.6047 0.0815 0.0568]
+  weakest direction: {'log_lam': 0.199, 'log_zb': 0.67, 'Ea': -0.067, 'log_l': -0.658, 'U': 0.273}

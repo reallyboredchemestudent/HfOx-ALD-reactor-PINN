@@ -1,0 +1,44 @@
+# Tooling configuration only: the code in code/ still runs as scripts (cd code && python <script>.py).
+# Everything here is enforced in CI (.github/workflows/ci.yml).
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+  "slow: takes more than about 30 s on one core (deselect with -m 'not slow')",
+  "jax: needs JAX installed",
+]
+
+[tool.ruff]
+line-length = 160          # long lines are the house style; not a correctness issue, so not enforced
+target-version = "py310"
+extend-exclude = ["aldfoam"]
+
+[tool.ruff.lint]
+# Only rules that catch a way for a number to change silently. Style rules are deliberately left out.
+select = [
+  "F",       # pyflakes: star imports (F403/F405), undefined names (F821), unused imports/variables, redefinitions
+  "E9",      # syntax errors
+  "B006",    # mutable default arguments (state shared between calls)
+  "B008",    # function calls in default arguments (evaluated once, at import)
+  "PLW0602", "PLW0603",  # global statements: hidden module state
+  "TID251",  # banned APIs, below
+]
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"sys.path".msg = "Do not edit sys.path: scripts run from code/ already have it on the path; tests use tests/conftest.py."
+"os.environ".msg = "Configuration read from the environment at import time changes numbers silently. Pass it as an argument (allowlisted legacy reads: see per-file-ignores)."
+
+[tool.ruff.lint.per-file-ignores]
+# Legacy import-time configuration, guarded by an explicit check in each entry script (see REVIEW.md, finding 3).
+# This list is the remaining debt: shrink it, never grow it.
+"code/fvmodel.py" = ["TID251"]        # ALD_NCYC
+"code/pinn.py" = ["TID251"]           # PDE_W, PHYS_SCALE
+"code/instrument.py" = ["TID251"]     # ALD_LOOKUP
+"code/pinn_run.py" = ["TID251"]       # N55, NSAT, STAGES, FAIR_START
+"code/compare.py" = ["TID251"]        # CHI2_MAX
+"code/run_real.py" = ["TID251"]       # sets ALD_NCYC and thread counts before importing the model
+"code/recalibrated.py" = ["TID251"]
+"code/process_window.py" = ["TID251"]
+"code/pinn_jax.py" = ["TID251"]
+"tests/*" = ["TID251", "E402"]

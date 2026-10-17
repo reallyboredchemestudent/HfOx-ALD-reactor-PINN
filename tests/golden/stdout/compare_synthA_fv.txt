@@ -1,0 +1,14 @@
+hold (100.0, 55.0): 0 of 0 PINN members with data chi2 < 330
+hold (125.0, 55.0): 0 of 0 PINN members with data chi2 < 330
+hold (150.0, 55.0): 0 of 0 PINN members with data chi2 < 330
+hold (175.0, 55.0): 0 of 0 PINN members with data chi2 < 330
+hold (200.0, 55.0): 0 of 0 PINN members with data chi2 < 330
+hold (225.0, 55.0): 0 of 0 PINN members with data chi2 < 330
+hold (250.0, 55.0): 0 of 0 PINN members with data chi2 < 330
+FV       hold (100.0, 55.0): RMSE vs reported 0.51 nm, vs true film 0.71 nm, inside 90% 1.00, mean width 5.81 nm
+FV       hold (125.0, 55.0): RMSE vs reported 1.24 nm, vs true film 1.33 nm, inside 90% 1.00, mean width 5.52 nm
+FV       hold (150.0, 55.0): RMSE vs reported 0.76 nm, vs true film 0.84 nm, inside 90% 1.00, mean width 4.87 nm
+FV       hold (175.0, 55.0): RMSE vs reported 1.16 nm, vs true film 0.98 nm, inside 90% 1.00, mean width 3.90 nm
+FV       hold (200.0, 55.0): RMSE vs reported 0.20 nm, vs true film 0.20 nm, inside 90% 1.00, mean width 2.94 nm
+FV       hold (225.0, 55.0): RMSE vs reported 0.15 nm, vs true film 0.12 nm, inside 90% 0.89, mean width 1.64 nm
+FV       hold (250.0, 55.0): RMSE vs reported 0.52 nm, vs true film 0.50 nm, inside 90% 0.89, mean width 0.67 nm

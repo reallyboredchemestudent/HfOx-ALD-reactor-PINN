@@ -1,0 +1,5 @@
+TDMA-Hf at 448 K: thermal speed 163.5 m/s, site area 0.278 nm^2, D 0.0214 m^2/s
+case A: gap 1.0 cm, mean speed 1.79 m/s, pulse 0.20 s (ramp 0.010 s), purge 1.5 s; beta0 0.02432; inlet precursor 1.991 Pa (14.94 mTorr), dose 0.3982 Pa s
+case B: gap 1.0 cm, mean speed 1.79 m/s, pulse 0.05 s (ramp 0.005 s), purge 1.5 s; beta0 0.02432; inlet precursor 7.965 Pa (59.74 mTorr), dose 0.3982 Pa s
+case C: gap 1.0 cm, mean speed 1.79 m/s, pulse 0.40 s (ramp 0.010 s), purge 1.5 s; beta0 0.02432; inlet precursor 0.996 Pa (7.47 mTorr), dose 0.3982 Pa s
+case D: gap 0.5 cm, mean speed 3.58 m/s, pulse 0.20 s (ramp 0.010 s), purge 1.5 s; beta0 0.02432; inlet precursor 1.991 Pa (14.94 mTorr), dose 0.3982 Pa s

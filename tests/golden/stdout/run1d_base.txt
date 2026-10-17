@@ -1,0 +1,7 @@
+Base case: Pe=26.7 A=4.0 K=3.7 dose=2.0 (front near x=0.5)
+N= 200: residual gas max 1.2e-18 | kinetics identity max|dtheta| 1.6e-09 | time vs steady max|dtheta| 3.7e-05 | max|dE|/max E 1.8e-05 | <t>
+N= 400: residual gas max -6.6e-21 | kinetics identity max|dtheta| 1.6e-09 | time vs steady max|dtheta| 9.2e-06 | max|dE|/max E 4.4e-06 | <t>
+N= 800: residual gas max 1.5e-17 | kinetics identity max|dtheta| 1.6e-09 | time vs steady max|dtheta| 2.3e-06 | max|dE|/max E 1.1e-06 | <t>
+Plug-flow closed form vs Pe=26.7 steady: max|dtheta| 0.058
+front (theta=0.5) position: steady 0.492, plug-flow 0.499
+front 90-10 width: with diffusion 0.369, plug-flow 0.296 (in units of L=20 cm)

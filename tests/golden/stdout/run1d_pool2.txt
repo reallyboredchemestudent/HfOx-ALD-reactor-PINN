@@ -1,0 +1,8 @@
+Pool with chemisorption from the gas: error vs purge length (1 time unit = one residence time)
+kd=1.0: purge to t= 20  max|dtheta| 7.3e-03 (0.110 nm) | pool left 6e-03
+kd=1.0: purge to t= 60  max|dtheta| 9.2e-06 (0.000 nm) | pool left 1e-08
+kd=1.0: purge to t=200  max|dtheta| 9.2e-06 (0.000 nm) | pool left -1e-21
+kd=0.3: purge to t= 20  max|dtheta| 1.9e-01 (2.850 nm) | pool left 2e-01
+kd=0.3: purge to t= 60  max|dtheta| 7.9e-03 (0.118 nm) | pool left 7e-03
+kd=0.3: purge to t=200  max|dtheta| 9.2e-06 (0.000 nm) | pool left 4e-09
+mediated, purge to t=200: max|dtheta| 7.5e-01 (11.29 nm) | pool left 7e-21

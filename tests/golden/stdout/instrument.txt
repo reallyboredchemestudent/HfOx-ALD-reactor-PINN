@@ -1,0 +1,10 @@
+true  0.0 -> mean reported  1.84, sd 0.73, slope 0.00
+true  1.0 -> mean reported  2.87, sd 0.76, slope 1.08
+true  2.0 -> mean reported  3.68, sd 0.99, slope 0.63
+true  3.0 -> mean reported  4.36, sd 1.00, slope 0.62
+true  4.0 -> mean reported  5.02, sd 0.54, slope 0.77
+true  5.0 -> mean reported  5.88, sd 0.17, slope 0.91
+true  6.0 -> mean reported  6.84, sd 0.08, slope 0.97
+true  8.0 -> mean reported  8.82, sd 0.07, slope 1.00
+true 10.0 -> mean reported 10.82, sd 0.07, slope 1.00
+true 15.0 -> mean reported 15.82, sd 0.07, slope 1.00

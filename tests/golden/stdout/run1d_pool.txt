@@ -1,0 +1,9 @@
+--- Physisorbed pool (holdup) ---
+no pool (reference)                                        max|dtheta| 9.2e-06 (0.00 nm) | gas left 2e-17 | pool left 0e+00
+pool, chemisorption from gas, kd=1.0, purged by t=20       max|dtheta| 7.3e-03 (0.11 nm) | gas left 1e-03 | pool left 6e-03
+pool, chemisorption from gas, kd=0.3, purged by t=20       max|dtheta| 1.9e-01 (2.85 nm) | gas left 1e-02 | pool left 2e-01
+same pool, purge cut to t=4 (pool not emptied)             max|dtheta| 6.1e-01 (9.17 nm) | gas left 7e-02 | pool left 6e-01
+chemisorption THROUGH the pool (precursor-mediated)        max|dtheta| 7.5e-01 (11.29 nm) | gas left 2e-05 | pool left 2e-04
+--- Flow faster during the pulse, same molecules delivered ---
+flow 20% faster during pulse                               max|dtheta| 1.8e-02 (0.27 nm) | gas left -1e-20 | pool left 0e+00
+flow 50% faster during pulse                               max|dtheta| 4.9e-02 (0.74 nm) | gas left 1e-17 | pool left 0e+00

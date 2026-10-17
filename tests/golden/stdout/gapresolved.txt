@@ -1,0 +1,14 @@
+gap 1.0 cm, mean speed 179.0 cm/s: sticking 0.024, wall Damkohler ks*h/D = 0.46, gap Peclet 0.84
+  (1) transient vs steady gap-resolved exposure: max|dtheta| 5.9e-09 (0.0000 nm); gas left 9e-15
+  (2) spike: flow +10%, pressure +10% during pulse: max|dtheta| 0.001 (0.01 nm)
+  (2) spike: flow +30%, pressure +20% during pulse: max|dtheta| 0.004 (0.05 nm)
+  (2) spike: flow +50%, pressure +40% during pulse: max|dtheta| 0.008 (0.13 nm)
+  (3) depth-averaged steady fit: reach 16.05 cm, width 0.837 cm (nominal 0.9), dispersion 1.616 cm (D/u 1.196); worst misfit 0.0005 (0.008 nm)
+      top vs bottom plate max difference 3.3e-16
+gap 0.5 cm, mean speed 358.0 cm/s: sticking 0.024, wall Damkohler ks*h/D = 0.23, gap Peclet 0.84
+  (1) transient vs steady gap-resolved exposure: max|dtheta| 4.4e-08 (0.0000 nm); gas left 2e-16
+  (2) spike: flow +10%, pressure +10% during pulse: max|dtheta| 0.002 (0.03 nm)
+  (2) spike: flow +30%, pressure +20% during pulse: max|dtheta| 0.011 (0.16 nm)
+  (2) spike: flow +50%, pressure +40% during pulse: max|dtheta| 0.023 (0.34 nm)
+  (3) depth-averaged steady fit: reach 16.06 cm, width 0.885 cm (nominal 0.9), dispersion 0.708 cm (D/u 0.598); worst misfit 0.0003 (0.004 nm)
+      top vs bottom plate max difference 6.7e-16

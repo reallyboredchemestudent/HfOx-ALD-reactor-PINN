@@ -1,0 +1,13 @@
+read ../data/lee2026_hfox_ald_dataset.csv: 315 rows x 9 columns
+columns: Deposition temperature (C), Precursor temperature (C), Site, x (cm), y (cm), Thickness (nm), RI, WER (nm/min), Cycles
+column roles: {"td": "Deposition temperature (C)", "tp": "Precursor temperature (C)", "thickness": "Thickness (nm)", "ri": "RI", "wer": "WER (nm/min)", "site": "Site", "x": "x (cm)", "y": "y (cm)", "cycles": "Cycles"}
+cycles per wafer from the CSV: 100
+site positions from columns x (cm), y (cm) (read as cm)
+downhill thickness direction of the 55 C wafers: +9.4 deg from CSV +y (|grad| 1.34 nm/cm)
+the CSV sites are the synthetic site map rotated (candidate flow angles [-180, -90, 0, 90] deg); took +0.0 deg, 9 deg from the downhill direction. CHECK this against the flow arrow in the paper's reactor/site figure; override with --flow-angle.
+  (a left/right mirror is not identifiable from thickness; it only flips the sign of the inlet tilt g1)
+distance of each real site to the nearest synthetic site (cm): [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+filled 315 of 315 wafer-sites
+median thickness of the 75 C (saturated) wafer per deposition temperature: 100 C 15.20 nm, 125 C 14.80 nm, 150 C 13.30 nm, 175 C 13.00 nm, 200 C 11.90 nm, 225 C 11.40 nm, 250 C 10.50 nm
+implied GPC at 100 cycles (A/cycle): 1.520, 1.480, 1.330, 1.300, 1.190, 1.140, 1.050
+thickest reported film 16.70 nm: inside the instrument table (covers reported films up to 17.32 nm)
