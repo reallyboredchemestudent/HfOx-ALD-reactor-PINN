@@ -1,0 +1,50 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "17 6 * * 1"     # weekly: catches a new upstream release that moves a number, even with no commits here
+
+jobs:
+  lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install "ruff==0.16.8"
+      - run: ruff check .
+      - run: shellcheck run_all.sh run_aldfoam.sh
+
+  golden:
+    # The pinned environment: the numbers in tests/golden/ must reproduce exactly as recorded.
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, macos-14]
+        python: ["3.12", "3.13"]
+    env: { OMP_NUM_THREADS: "1", OPENBLAS_NUM_THREADS: "1", MKL_NUM_THREADS: "1" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ matrix.python }}", cache: pip }
+      - run: pip install -r requirements-lock.txt
+      - run: pytest -m "not slow" -q
+      - run: pytest -m slow -q
+        timeout-minutes: 40
+      - name: README quick start reaches INSTALL CHECK PASSED
+        run: bash run_all.sh check selfcheck
+
+  latest:
+    # Unpinned: the newest releases allowed by requirements.txt. Failure here means "an upgrade moves a number",
+    # not "the code is wrong"; read the diff before re-recording anything.
+    runs-on: ubuntu-22.04
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13" }
+      - run: pip install -r requirements.txt pytest
+      - run: pytest -q

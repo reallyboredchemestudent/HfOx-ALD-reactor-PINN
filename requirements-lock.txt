@@ -1,0 +1,11 @@
+# Exact versions the golden tests (tests/golden/) were recorded and verified with, on Python 3.13 / Linux x86-64.
+# CI installs this file; requirements.txt keeps the loose ranges for people who need them.
+# Regenerate deliberately (never to make a red test green):  uv pip compile requirements.txt -o requirements-lock.txt
+numpy==2.5.3
+scipy==1.18.1
+pandas==3.0.5
+matplotlib==3.11.2
+pytest==9.1.1
+# JAX was not installable where the goldens were recorded. Pin it from the first machine where
+# `bash run_all.sh selfcheck` prints SELF-CHECK PASSED:  pip freeze | grep -E '^(jax|jaxlib)=='
+jax[cpu]>=0.4.20
