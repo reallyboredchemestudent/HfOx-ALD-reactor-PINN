@@ -109,17 +109,20 @@ Run from `code/` unless noted. Times are for an 8-core desktop.
 
 ## Quick start
 
-Linux or WSL2 (Ubuntu 22.04), Python ≥ 3.10:
+Linux, macOS or WSL2, Python ≥ 3.12 (on Ubuntu 22.04, which ships 3.10, see [docs/SETUP.md](docs/SETUP.md) §2):
 
 ```bash
+git clone https://github.com/reallyboredchemestudent/HfOx-ALD-reactor-PINN.git && cd HfOx-ALD-reactor-PINN
 python3 -m venv ~/ald-env && source ~/ald-env/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-lock.txt   # exact versions the reference numbers were recorded with
 bash run_all.sh check selfcheck        # FV fit reproduces the reference numbers; JAX gradients match NumPy
+pytest -m "not slow"                   # golden tests: every frozen number still reproduces (about 1 min)
 bash run_all.sh load collapse recal window
 ```
 
-`check` must print `INSTALL CHECK PASSED` and `selfcheck` `SELF-CHECK PASSED`. Full setup, including Julia and
-OpenFOAM-10 + aldFoam: [docs/SETUP.md](docs/SETUP.md).
+`check` must print `INSTALL CHECK PASSED` and `selfcheck` `SELF-CHECK PASSED`; `run_all.sh` stops at the first step
+that fails. `requirements.txt` keeps looser ranges if you need other versions; run the golden tests after any upgrade.
+Full setup, including Julia and OpenFOAM-10 + aldFoam: [docs/SETUP.md](docs/SETUP.md).
 
 ## What is in here
 
@@ -134,7 +137,8 @@ OpenFOAM-10 + aldFoam: [docs/SETUP.md](docs/SETUP.md).
 | `code/gapresolved.py`, `breaks.py`, `reduction/` | Checks of the reduction: gap-resolved channel, broken assumptions, transient vs steady |
 | `code/identifiability.py`, `rank1d.py`, `profile_lik.py`, `identifiability.jl` | Identifiability: Fisher information, rank tests, profile likelihoods, StructuralIdentifiability.jl |
 | `code/aldfoam_params.py`, `make_aldfoam_cases.py`, `compare_aldfoam.py`, `aldfoam/` | aldFoam comparison cases and their analysis |
-| `code/*.npz`, `*.npy` | Synthetic datasets A and B and the reference FV hold-out results used by `compare.py` |
+| `code/*.npz`, `*.npy` | Synthetic datasets A and B and the reference FV hold-out results used by `compare.py` (inputs: never overwritten) |
+| `tests/` | Golden-master tests: the numbers above frozen with stated tolerances (`tests/record_golden.py` says how they were recorded) |
 | `data/` | The 315-site dataset and its provenance |
 
 ## Data

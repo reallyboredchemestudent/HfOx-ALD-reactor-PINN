@@ -1,11 +1,11 @@
-# Running the blocked parts of the steady-exposure stage on your PC
+# Full setup: Python, JAX, Julia and OpenFOAM
 
-The cloud workspace could not install JAX, Julia or OpenFOAM, and it does not have Lee et al.'s CSV. This package
-runs those four pieces on your machine and collects everything into one zip to send back:
+The README's quick start needs only Python. This guide adds the pieces with heavier dependencies (JAX, Julia,
+OpenFOAM-10 + aldFoam) and runs every stage on your machine:
 
 | Piece | What it settles | Script | Rough time |
 |---|---|---|---|
-| Install check | your machine reproduces the cloud FV fit exactly | `code/check_install.py` | 2–5 min |
+| Install check | your machine reproduces the reference FV fit (`code/check_install_expected.json`) | `code/check_install.py` | 2–5 min |
 | JAX PINN | a real autodiff PINN, checked against the NumPy one, then ensembles on real wafers | `code/pinn_jax.py` | self-check 1 min; ensembles 1–3 h |
 | Real wafers | collapse plot, FV fit, per-wafer flags, hold-one-wafer-out, extrapolation, FV vs PINN | `code/data_real.py`, `code/run_real.py` | 30–60 min |
 | StructuralIdentifiability.jl | exact answer on which groups one or two doses identify | `code/identifiability.jl` | 30 min install, minutes to run |
@@ -23,26 +23,30 @@ In PowerShell (as administrator):
 wsl --install -d Ubuntu-22.04
 ```
 
-Restart, open "Ubuntu 22.04" from the Start menu and create a user. Then put the package in your Linux home (not under
-`/mnt/c`: OpenFOAM and Python are several times slower on the Windows filesystem):
+Restart, open "Ubuntu 22.04" from the Start menu and create a user. Then clone the repository into your Linux home
+(not under `/mnt/c`: OpenFOAM and Python are several times slower on the Windows filesystem):
 
 ```bash
-sudo apt update && sudo apt install -y python3-venv python3-pip build-essential unzip git curl
-cp /mnt/c/Users/<your Windows user>/Downloads/hfox-steady-exposure ~ && cd ~ && unzip hfox-steady-exposure && cd hfox_local
+sudo apt update && sudo apt install -y build-essential unzip git curl
+git clone https://github.com/reallyboredchemestudent/HfOx-ALD-reactor-PINN.git ~/hfox-steady-exposure
+cd ~/hfox-steady-exposure
 ```
 
 Ubuntu 22.04 is needed because aldFoam builds only against OpenFOAM-10, and openfoam.org packages OpenFOAM-10 for 20.04/22.04.
 
 ## 2. Python environment
 
+The pinned versions in `requirements-lock.txt` need Python 3.12 or newer; Ubuntu 22.04 ships 3.10, so get 3.12 with uv:
+
 ```bash
-python3 -m venv ~/ald-env && source ~/ald-env/bin/activate      # put the `source` line in ~/.bashrc too
-pip install --upgrade pip
-pip install numpy scipy pandas matplotlib "jax[cpu]"
+curl -LsSf https://astral.sh/uv/install.sh | sh && source ~/.local/bin/env
+uv venv --python 3.12 ~/ald-env && source ~/ald-env/bin/activate   # put the `source` line in ~/.bashrc too
+uv pip install -r requirements-lock.txt     # the exact versions the golden tests were recorded with
 python -c "import jax; jax.config.update('jax_enable_x64', True); print(jax.__version__, jax.devices())"
 ```
 
-pip picks the newest JAX that supports Ubuntu 22.04's Python 3.10; any JAX from 0.4.20 on works with this code.
+Any JAX from 0.4.20 on works with this code; once `selfcheck` passes, pin the version you have in
+`requirements-lock.txt` (`pip freeze | grep -E '^(jax|jaxlib)=='`).
 JAX runs on the CPU here on purpose: its AMD GPU (ROCm) support does not cover WSL reliably, and this problem
 (a few thousand collocation points, a 100-unit network) is fastest as several single-threaded CPU processes in parallel.
 
@@ -53,9 +57,9 @@ cd ~/hfox-steady-exposure
 bash run_all.sh check selfcheck
 ```
 
-`check` must print `INSTALL CHECK PASSED` (your FV fit of synthetic set A equals the cloud one), and `selfcheck` must
+`check` must print `INSTALL CHECK PASSED` (your FV fit of synthetic set A equals the reference), and `selfcheck` must
 print `SELF-CHECK PASSED` (the JAX loss and its gradient equal the NumPy implementation's, whose gradient was checked by
-finite differences). The self-check also prints milliseconds per loss-and-gradient evaluation; one ensemble member
+finite differences in `tests/test_pinn.py`). The self-check also prints milliseconds per loss-and-gradient evaluation; one ensemble member
 takes about 7,000 evaluations plus compilation.
 
 ## 3. Julia and StructuralIdentifiability.jl
@@ -91,7 +95,7 @@ wafer centre at 7.5 cm). Three things to check against the paper:
 * **Column names.** If a role is missed, write `data_map.json` (format in the docstring of `data_real.py`) and pass `--map`.
 
 If the report says the thickest film exceeds the instrument table, run `cd code && python make_lookup.py <nm>` once.
-Rows outside the 7 × 5 design (for example a pulse-time series) go to `results/real_extra.csv`; send that too, since a
+Rows outside the 7 × 5 design (for example a pulse-time series) go to `results/real_extra.csv`; keep it, since a
 pulse-time series at fixed temperatures is a direct test of the "dose only" claim.
 
 ## 5. Real-wafer runs and PINN ensembles
@@ -161,8 +165,8 @@ flow, both plates reactive with aldFoam's ideal first-order model, reach 16 cm, 
 
 β0 = 0.0243, D = 0.0214 m²/s, site area 0.278 nm² (one Hf per site per cycle at 1.30 Å/cycle), purge 1.5 s after the pulse.
 
-**What I could not verify from the cloud:** GitHub's file browser was not reachable, so I have the README's build
-steps and the paper's model, but not the names of the example case's files and keywords. For each case:
+**Not verified against the current aldFoam release:** the names of the example case's files and keywords. Check
+them against aldFoam's own example before running. For each case:
 
 1. `cp -r ~/aldFoam/examples/aldFoam ~/ald_cases/A` (B, C, D likewise) and read the example's README/Allrun.
 2. Replace `system/blockMeshDict` with `aldfoam/system/blockMeshDict_gap1.0` (D: `_gap0.5`). Patch names are
@@ -191,12 +195,18 @@ with `--field`, `--key`, `--patch`). A pass looks like this:
   the stand-in fixes the inlet flux, so the nominal-dose comparison can differ slightly more).
 * the depth-averaged fit (the PINN's equation) within about 0.01 nm of film, as in the stand-in.
 
-## 7. What to send back
+## 7. Archiving the results
 
 ```bash
 bash run_all.sh collect
 ```
 
-and send `results_to_send.zip`. It contains the load report, collapse plot and tables, FV fits and flags, hold-out
-and extrapolation tables, PINN members and the comparison, `si_results.txt`, the aldFoam comparisons and every log.
-If a step failed, its log in `results/logs/` is what I need.
+writes `results.zip`: the load report, collapse plot and tables, FV fits and flags, hold-out and extrapolation
+tables, PINN members and the comparison, `si_results.txt`, the aldFoam comparisons and every log.
+
+## If a check fails
+
+`run_all.sh` stops at the first failed step and names its log in `results/logs/`. To see whether a number moved,
+run the golden tests: `pip install -r requirements-lock.txt && pytest -m "not slow"` (then `pytest -m slow`). A failure
+prints the quantity, the value it expected and where it was recorded. If the tests pass under `requirements-lock.txt`
+but `check` fails under your own package versions, an upgrade moved the number: open an issue with both outputs.
