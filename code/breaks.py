@@ -12,9 +12,9 @@ Break cases:
   mediated      : chemisorption only from the physisorbed pool             -> breaks 'first order in gas'
   surface_cvd   : extra non-saturating growth ~ exposure, rising with T (steady, exact) -> missing mechanism"""
 import numpy as np
-from scipy.sparse import diags, bmat, identity, csr_matrix
+from scipy.sparse import diags, bmat
 from scipy.integrate import solve_ivp
-from fvmodel import Grid, groups, inlet_profile, solve as steady_solve, CONDS, SITES, THK
+from fvmodel import Grid, groups, inlet_profile, CONDS, THK
 
 U_175 = 179.0     # cm/s at 175 C for a 1 cm gap (V2 bracket)
 def pulse_len(td): return U_175*(td + 273.15)/448.15*0.2      # cm of flow during the 0.2 s pulse

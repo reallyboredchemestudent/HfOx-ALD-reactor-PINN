@@ -13,9 +13,8 @@ coverage on the wall patch (any keyed `nonuniform List<scalar>` with values in [
 All differences are also given in nm of film (x 15 nm, the saturated film of the synthetic study).
 Writes aldfoam_compare.txt / .csv / .png next to the first case (or --out).
 """
-import os, re, sys, glob, json, argparse
+import os, re, argparse
 import numpy as np
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 def tokenize(text):
     text = re.sub(r'/\*.*?\*/', ' ', text, flags=re.S); text = re.sub(r'//[^\n]*', ' ', text)
@@ -160,7 +159,7 @@ def main():
             for xi, ti in zip(cv['x'], cv['th']): w.writerow([cv['label'], round(xi, 4), ti, np.interp(xi, y, th_s[0])])
     import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
     COLS = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#008300', '#6250d6', '#e34948']
-    SURF, INK, INK2, MUTED, GRID, AXIS = '#fcfcfb', '#0b0b0b', '#52514e', '#898781', '#e1e0d9', '#c3c2b7'
+    SURF, _INK, INK2, MUTED, GRID, AXIS = '#fcfcfb', '#0b0b0b', '#52514e', '#898781', '#e1e0d9', '#c3c2b7'
     plt.rcParams.update({'axes.edgecolor': AXIS, 'axes.labelcolor': INK2, 'xtick.color': MUTED, 'ytick.color': MUTED,
                          'axes.facecolor': SURF, 'figure.facecolor': SURF, 'font.size': 10})
     fig, ax = plt.subplots(figsize=(7.5, 4))

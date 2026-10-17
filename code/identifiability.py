@@ -1,6 +1,6 @@
 import numpy as np, warnings
 warnings.filterwarnings('ignore')
-from fvmodel import *
+from fvmodel import CONDS, Grid, NAMES, TD, TRUTH_A, forward, groups, solve
 import instrument as INS
 np.set_printoptions(precision=3, suppress=True, linewidth=160)
 p = TRUTH_A.copy()

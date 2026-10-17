@@ -1,6 +1,6 @@
 import numpy as np, warnings
 warnings.filterwarnings('ignore')
-from fvmodel import *
+from fvmodel import Grid, NAMES, TD, TRUTH_A, groups, solve
 np.set_printoptions(precision=4, suppress=True, linewidth=160)
 p = TRUTH_A.copy()
 YOBS = np.linspace(2.5, 12.5, 81)   # continuous output across the wafer, fixed physical positions

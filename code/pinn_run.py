@@ -1,6 +1,10 @@
-"""PINN driver. Usage: python pinn_run.py <dataset.npz> <tag> <seed> <holdout index or -1> [pretrained.npy]"""
+"""PINN driver. Usage: python pinn_run.py <dataset.npz> <tag> <seed> <holdout index or -1> [pretrained.npy]
+
+Settings come from the environment and default to N55=260 NSAT=50 STAGES=10 PDE_W=1 PHYS_SCALE=1e-3. These are NOT the
+study configuration documented in pinn_jax.py (N55=200 NSAT=40 STAGES=8 PDE_W=20 PHYS_SCALE=1e-2 FAIR_START=1); set
+those explicitly to reproduce it. The effective settings are printed first so every log records them."""
 import numpy as np, sys, time
-from pinn import *
+from pinn import Layout, PDE_W, PHYS_SCALE, Problem, init_params, inlet_g, train
 data, tag, seed, hold = sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4])
 pre = sys.argv[5] if len(sys.argv) > 5 else None
 Y = np.load(data)['Y']; mask = np.ones(35, bool)
@@ -8,6 +12,9 @@ if hold >= 0: mask[hold] = False
 rng = np.random.default_rng(seed)
 lay = Layout(H=100, HG=6)
 prob = Problem(Y, mask, lay, rng, n55=int(__import__("os").environ.get("N55", 260)), nsat=int(__import__("os").environ.get("NSAT", 50)), nin=24)
+_env = __import__('os').environ
+print(f"settings: N55={_env.get('N55', 260)} NSAT={_env.get('NSAT', 50)} STAGES={_env.get('STAGES', 10)} PDE_W={PDE_W} "
+      f"PHYS_SCALE={PHYS_SCALE} FAIR_START={bool(_env.get('FAIR_START'))}", flush=True)
 t0 = time.time()
 if pre is None:
     th = init_params(lay, rng)

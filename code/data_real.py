@@ -224,7 +224,7 @@ def main():
     log.append(f"implied GPC at {ncyc:g} cycles (A/cycle): " + ", ".join(f"{g:.3f}" for g in gpc))
     if not (0.6 < np.nanmedian(gpc) < 2.2):
         log.append("WARNING: implied GPC is outside 0.6-2.2 A/cycle; the cycle count is probably wrong (pass --ncyc)")
-    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))); import instrument as INS
+    import instrument as INS
     top = float(INS.marginal(np.array(INS.TMAX - 0.5))[0])      # reported thickness near the top of the lookup table
     if np.nanmax(Y) > top:
         log.append(f"WARNING: thickest reported film {np.nanmax(Y):.2f} nm is beyond the instrument table (reported {top:.2f} nm at "

@@ -1,7 +1,8 @@
 """Hold-one-wafer-out with the finite-volume inverse: refit without one 55 C wafer, predict it with a 90 % interval."""
 import numpy as np, sys, warnings
 warnings.filterwarnings('ignore')
-from fit import *
+import instrument as INS
+from fit import CONDS, PRIOR_MU, SIG_O, fit, forward
 data, tag = sys.argv[1], sys.argv[2]
 holds = [int(h) for h in sys.argv[3].split(',')] if len(sys.argv) > 3 else [i for i, c in enumerate(CONDS) if c[1] == 55.0]
 z = np.load(data); Y = z['Y']

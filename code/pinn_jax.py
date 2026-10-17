@@ -38,7 +38,7 @@ ap.add_argument('--pre-tag', default=None, help='reuse physics-only pretraining 
 A = ap.parse_args()
 
 # ---- data first: the cycle count and the site positions must be set before the model modules are imported ----
-HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
+HERE = os.path.dirname(os.path.abspath(__file__))
 Z = np.load(A.data if os.path.exists(A.data) else os.path.join(HERE, A.data), allow_pickle=True)
 if 'ncyc' in Z: os.environ['ALD_NCYC'] = str(float(Z['ncyc']))
 os.environ['PDE_W'] = str(A.pde_w); os.environ['PHYS_SCALE'] = str(A.phys_scale)
@@ -47,6 +47,7 @@ if 'sites' in Z: FV.SITES[:] = Z['sites']
 import instrument as INS
 import pinn as PN                                     # NumPy reference: layout, collocation, priors, reporting
 import budget as BU
+if 'ncyc' in Z: FV.require_ncyc(Z['ncyc'], PN)
 
 import jax
 jax.config.update('jax_enable_x64', True)
@@ -265,7 +266,7 @@ def selfcheck():
             print(f"  block {k:5s} rel diff {d:.1e}")
         print(f"  compile + first call {tc:.1f} s, then {1e3*te:.1f} ms per value-and-gradient ({prob.col.shape[0]} collocation points)")
         ok_all &= rel_f < 1e-8 and rel_g < 1e-6
-    print("SELF-CHECK", "PASSED" if ok_all else "FAILED (send this output back)")
+    print("SELF-CHECK", "PASSED" if ok_all else "FAILED (see docs/SETUP.md, 'If a check fails')")
     return ok_all
 
 if __name__ == '__main__':

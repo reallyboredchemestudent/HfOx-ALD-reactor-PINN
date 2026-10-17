@@ -2,9 +2,9 @@
 nonlinear model (instead of linearising), plus parameter uncertainty (linearised) and instrument noise."""
 import numpy as np, sys, warnings
 warnings.filterwarnings('ignore')
-from fvmodel import *
+from fvmodel import CONDS, forward
 import instrument as INS
-from fit import SIG_O, SIG_B
+from fit import SIG_O
 tag = sys.argv[1]
 R = np.load(f'howo_fv_{tag}.npy', allow_pickle=True)
 rng = np.random.default_rng(7); out = []

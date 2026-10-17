@@ -1,6 +1,6 @@
 """Inverse PINN for the steady exposure equation, NumPy only (no autodiff libraries are installable here).
 Network: one hidden tanh layer, all weights trained, analytic input derivatives up to second order and
-analytic parameter gradients of every loss term (checked against finite differences in test_pinn.py).
+analytic parameter gradients of every loss term (checked against finite differences in tests/test_pinn.py).
 
   e(x, y; Td, Tp) = delta_c * N(phi_x(xi), phi_y(eta), sd, sp)
   phi_x = cos(pi (xi+1)/2)  -> de/dx = 0 at both side walls by construction
@@ -11,7 +11,7 @@ with r_pde scaled by the front width so all terms are O(1). Physics parameters a
 import numpy as np
 from scipy.optimize import minimize
 import instrument as INS
-from fvmodel import TD, TP, SITES, CONDS, pv, TREF, KB, NAMES, THK
+from fvmodel import SITES, CONDS, pv, TREF, KB, THK
 
 XH = 7.5; YEND = 15.0
 import os
@@ -187,7 +187,6 @@ class Problem:
             gg = ggrad(wsum); HG = lay.HG
             G[lay.sl['gc']] += gg[:HG]; G[lay.sl['gv']] += gg[HG:2*HG]; G[lay.sl['gd']] += gg[2*HG:]
         # ---------- data through the instrument model ----------
-        mask = self.mask
         cidx = np.repeat(np.arange(35), 9); xs = np.tile(SITES[:, 0], 35)/XH; ys = np.tile(SITES[:, 1], 35)
         eta3 = (ys + U)/L
         fx, fx1, fx2, fy, fy1, fy2 = features(xs, eta3)

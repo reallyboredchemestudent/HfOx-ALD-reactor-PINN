@@ -14,7 +14,7 @@ Two answers per temperature, because they rest on different evidence:
 Uncertainty: parameter draws from the Laplace covariance of the fit (5-95 %); the setpoint adds a margin for the
 run-to-run dose scatter (one-sided 95 %, SIG_O).
 """
-import os, sys, json, argparse, csv
+import os, json, argparse, csv
 import numpy as np, multiprocessing
 ap = argparse.ArgumentParser()
 ap.add_argument('--npz', default=os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'results', 'real_Y.npz'))
@@ -25,9 +25,9 @@ ap.add_argument('--threshold', type=float, default=0.98); ap.add_argument('--td'
 A = ap.parse_args()
 Z = np.load(A.npz, allow_pickle=True); os.environ['ALD_NCYC'] = str(float(Z['ncyc']))
 for k in ('OMP_NUM_THREADS', 'OPENBLAS_NUM_THREADS', 'MKL_NUM_THREADS'): os.environ.setdefault(k, '1')
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fvmodel as FV
 FV.SITES[:] = Z['sites']
+FV.require_ncyc(Z['ncyc'])
 from fit import SIG_O, LB, UB
 fit = json.load(open(A.fit or os.path.join(A.out, 'recal_fit_td100-200.json')))
 P0 = np.array([fit['params'][n] for n in FV.NAMES]); SD = np.array([fit['sd'][n] for n in FV.NAMES])

@@ -7,14 +7,22 @@ Dimensional form divided by gas speed u (lengths in cm):
 Groups: lam = reach (cm, mass balance), zb = plug-flow front width (cm), l = D/u dispersion length (cm),
         U = reactive length upstream of the site origin (cm), g(x) = inlet flux profile (mean 1)."""
 import numpy as np
-from scipy.sparse import diags, kron, identity, csr_matrix, csc_matrix
+from scipy.sparse import diags, kron, identity, csr_matrix
 from scipy.sparse.linalg import splu
-import instrument as INS
 
 import os
 KB = 8.617333e-5
 NCYC = float(os.environ.get('ALD_NCYC', 100))   # ALD cycles per wafer
 THK = NCYC/10                                     # nm of film per (A/cycle) of GPC
+
+def require_ncyc(ncyc, *modules):
+    """NCYC is read from ALD_NCYC once, when this module is first imported, and other modules copy THK at their own
+    import. If anything imported fvmodel before the entry script set ALD_NCYC, every thickness is silently scaled.
+    Entry scripts call this right after their imports to turn that into an error."""
+    bad = [m.__name__ for m in modules if getattr(m, 'THK', THK) != THK]
+    if float(ncyc) != NCYC or bad:
+        raise RuntimeError(f"fvmodel was configured for {NCYC:g} cycles but the data say {float(ncyc):g}"
+                           + (f"; stale THK in {bad}" if bad else "") + ": set ALD_NCYC before the first import of fvmodel")
 TD = np.array([100,125,150,175,200,225,250.0]); TP = np.array([55,60,65,70,75.0])
 SITES = np.array([(0,4.5),(-1.5,6),(1.5,6),(-3,7.5),(0,7.5),(3,7.5),(-1.5,9),(1.5,9),(0,10.5)])
 CONDS = [(td, tp) for td in TD for tp in TP]          # 35 runs, one wafer each

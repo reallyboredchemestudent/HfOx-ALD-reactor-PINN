@@ -1,7 +1,7 @@
 """Recovery at the real design: noisy synthetic wafers from truth A, refit, check bias and interval coverage."""
 import numpy as np, sys, warnings
 warnings.filterwarnings('ignore')
-from fit import *
+from fit import PRIOR_MU, TRUTH_A, fit, make_data
 seed0, n = int(sys.argv[1]), int(sys.argv[2])
 rows = []
 for rep in range(seed0, seed0+n):

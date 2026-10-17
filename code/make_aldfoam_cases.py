@@ -10,9 +10,8 @@ plates, the precursor pressure and temperature, and an endTime of pulse + 1.5 s 
 Assumption to check on case A: 'pressure' in constant/processData is the precursor partial pressure (Pa) when N1 = 1.
 If case A's front is far from ~16 cm, that unit is different; the case-vs-case test (B, C vs A) does not depend on it.
 """
-import os, re, sys, json
+import os, re, sys
 import numpy as np
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import aldfoam_params as AP
 
 HDR = """/*--------------------------------*- C++ -*----------------------------------*\\

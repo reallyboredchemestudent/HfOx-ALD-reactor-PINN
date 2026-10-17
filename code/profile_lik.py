@@ -1,7 +1,7 @@
 """Profile likelihood on one synthetic dataset: fix one parameter on a grid, refit everything else."""
 import numpy as np, sys, warnings
 warnings.filterwarnings('ignore')
-from fit import *
+from fit import NAMES, PRIOR_MU, fit
 data = sys.argv[1]; k = NAMES.index(sys.argv[2]); grid = [float(v) for v in sys.argv[3].split(',')]
 Y = np.load(data)['Y']
 p0 = PRIOR_MU.copy(); p0[0] = np.log(22); p0[1] = np.log(1.2)

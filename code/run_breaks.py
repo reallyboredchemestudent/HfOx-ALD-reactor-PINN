@@ -1,7 +1,8 @@
 """Generate break-case wafers (same noise draw as truth A replicate 0) and fit each with the steady FV inverse."""
 import numpy as np, sys, warnings
 warnings.filterwarnings('ignore')
-from fit import *
+import instrument as INS
+from fit import CONDS, PRIOR_MU, SIG_B, SIG_O, TRUTH_A, fit, forward
 import breaks
 case = sys.argv[1]
 rng = np.random.default_rng(0)

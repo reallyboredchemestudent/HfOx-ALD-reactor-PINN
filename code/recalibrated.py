@@ -24,9 +24,9 @@ ap.add_argument('--tag', default='REALM', help='compare: PINN files pinn_<tag>_s
 A = ap.parse_args()
 Z = np.load(A.npz, allow_pickle=True); os.environ['ALD_NCYC'] = str(float(Z['ncyc']))
 for k in ('OMP_NUM_THREADS', 'OPENBLAS_NUM_THREADS', 'MKL_NUM_THREADS'): os.environ.setdefault(k, '1')
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fvmodel as FV
 FV.SITES[:] = Z['sites']
+FV.require_ncyc(Z['ncyc'])
 import instrument as INS, fit as F
 from scipy.optimize import least_squares
 Y = Z['Y']; CONDS = FV.CONDS; TD = FV.TD

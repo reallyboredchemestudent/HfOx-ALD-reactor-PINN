@@ -5,9 +5,9 @@ front width is ~0.9 cm and the front sits mid-chamber.
 Compares: (1) transient vs steady gap-resolved exposure (exact if flow is steady),
           (2) transient with a pressure spike during the pulse, same molecules delivered,
           (3) best-fit depth-averaged steady model (the PINN's equation) vs the gap-resolved truth."""
-import numpy as np, sys
+import numpy as np
 from scipy.sparse import diags, kron, identity, csr_matrix, bmat
-from scipy.sparse.linalg import splu, spsolve
+from scipy.sparse.linalg import spsolve
 from scipy.integrate import solve_ivp
 from scipy.optimize import least_squares
 from fvmodel import Grid, solve as solve_da
