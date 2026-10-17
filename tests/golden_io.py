@@ -4,7 +4,13 @@ Two kinds of golden:
   * JSON files of arrays/scalars, compared with an explicit tolerance per quantity (stated in each test);
   * the full stdout of a script, compared token by token: the text around the numbers must match exactly, and each
     number must agree to within one unit in its last printed digit (so a value sitting on a rounding boundary
-    may flip, but nothing larger can change unnoticed).
+    may flip, but nothing larger can change unnoticed). Two exceptions, both seen on CI across BLAS/LAPACK builds:
+      - NOISE_FLOOR: two values that are both below 1e-7 in magnitude agree. The scripts print such values only as
+        round-off or solver-tolerance residuals (coverage differences, residual gas, plate symmetry), whose digits
+        depend on the floating-point library; the claims made about them are of the form "below 1e-7". Real
+        discretisation errors in these outputs are 1e-6 and above and are still compared digit by digit.
+      - SIGN_FREE lines: a singular vector / eigenvector is defined only up to sign, so a printed direction agrees
+        if every component matches either as printed or with all signs flipped.
 """
 import json
 import platform
@@ -18,7 +24,7 @@ import numpy as np
 GOLDEN = Path(__file__).resolve().parent / "golden"
 REPO = GOLDEN.parents[1]
 
-_NUM = re.compile(r"(?<![\w.])[-+]?(?:\d+\.\d*|\.\d+|\d+)(?:[eE][-+]?\d+)?(?![\w.])|nan|inf")
+_NUM = re.compile(r"(?<![\w.])[-+]?(?:\d+\.\d*|\.\d+|\d+)(?:[eE][-+]?\d+)?(?![\w.])|\bnan\b|\binf\b")
 _NP_REPR = re.compile(r"np\.float(?:64|32)\(([^)]*)\)")   # NumPy >= 2 prints np.float64(0.2); NumPy 1 prints 0.2
 
 
@@ -65,6 +71,19 @@ def _value(tok):
     return float(tok)
 
 
+NOISE_FLOOR = 1e-7
+SIGN_FREE = re.compile(r"(weakest|sloppiest) direction:")
+
+
+def _numbers_agree(tg, tw, sign=1.0):
+    vg, vw = sign * _value(tg), _value(tw)
+    if (np.isnan(vw) and np.isnan(vg)) or vg == vw:
+        return True
+    if abs(vg) < NOISE_FLOOR and abs(vw) < NOISE_FLOOR:
+        return True
+    return abs(vg - vw) <= 1.01 * max(_ulp(tg), _ulp(tw))
+
+
 def compare_stdout(got_lines, want_lines):
     """Return a list of human-readable differences (empty when the outputs agree)."""
     diffs = []
@@ -74,10 +93,10 @@ def compare_stdout(got_lines, want_lines):
         if _NUM.sub("#", g) != _NUM.sub("#", w):
             diffs.append(f"line {i + 1} text differs:\n   got    {g}\n   golden {w}")
             continue
-        for tg, tw in zip(_NUM.findall(g), _NUM.findall(w)):
-            vg, vw = _value(tg), _value(tw)
-            if np.isnan(vw) and np.isnan(vg):
-                continue
-            if abs(vg - vw) > 1.01 * max(_ulp(tg), _ulp(tw)):
+        pairs = list(zip(_NUM.findall(g), _NUM.findall(w)))
+        if SIGN_FREE.search(w) and all(_numbers_agree(tg, tw, -1.0) for tg, tw in pairs):
+            continue
+        for tg, tw in pairs:
+            if not _numbers_agree(tg, tw):
                 diffs.append(f"line {i + 1}: {tg} != golden {tw}\n   {w}")
     return diffs

@@ -10,8 +10,8 @@ jobs:
   lint:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with: { python-version: "3.12" }
       - run: pip install "ruff==0.16.8"
       - run: ruff check .
@@ -27,8 +27,8 @@ jobs:
         python: ["3.12", "3.13"]
     env: { OMP_NUM_THREADS: "1", OPENBLAS_NUM_THREADS: "1", MKL_NUM_THREADS: "1" }
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with: { python-version: "${{ matrix.python }}", cache: pip }
       - run: pip install -r requirements-lock.txt
       - run: pytest -m "not slow" -q
@@ -43,8 +43,8 @@ jobs:
     runs-on: ubuntu-22.04
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with: { python-version: "3.13" }
       - run: pip install -r requirements.txt pytest
       - run: pytest -q
