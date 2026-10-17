@@ -1,5 +1,5 @@
 import numpy as np, time
-from reduce1d import *
+from reduce1d import BASE, plugflow_closed_form, square, steady_solve, time_solve
 P = BASE; Phi = P['tau_p']
 print("Base case: Pe=%.1f A=%.1f K=%.1f dose=%.1f (front near x=0.5)" % (P['Pe'],P['A'],P['K'],Phi))
 for N in (200, 400, 800):

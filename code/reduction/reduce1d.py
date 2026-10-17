@@ -100,3 +100,14 @@ def time_solve_pool(N=400, Pe=26.7, A=4.0, K=3.7, cin=None, breaks=(), t_end=20.
         z = sol.y[:, -1]; t0 = t1
     x = (np.arange(N)+0.5)*dx
     return x, z[:N], z[N:2*N], z[2*N:3*N], z[3*N:]
+
+
+def pool_setup(N=400):
+    """Shared set-up of run1d_pool.py and run1d_pool2.py: the base case, its steady reference coverage, a square pulse
+    of the base pulse length, and the time-solver keywords. One definition, so the two scripts cannot drift apart."""
+    P = BASE; tp = P['tau_p']
+    x = (np.arange(N)+0.5)/N
+    _, ths = steady_solve(x, Pe=P['Pe'], A=P['A'], K=P['K'], Phi=tp)
+    sq = lambda t: 1.0 if t < tp else 0.0
+    kw = dict(N=N, Pe=P['Pe'], A=P['A'], K=P['K'], breaks=[tp])
+    return P, x, ths, sq, kw

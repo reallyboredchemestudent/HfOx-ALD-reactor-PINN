@@ -1,11 +1,7 @@
 import numpy as np, warnings
 warnings.filterwarnings('ignore')
-from reduce1d import *
-P = BASE; N = 400
-x = (np.arange(N)+0.5)/N
-_, ths = steady_solve(x, Pe=P['Pe'], A=P['A'], K=P['K'], Phi=2.0)
-sq = lambda t: 1.0 if t < 2.0 else 0.0
-kw = dict(N=N, Pe=P['Pe'], A=P['A'], K=P['K'], breaks=[2.0])
+from reduce1d import pool_setup, time_solve_pool
+P, x, ths, sq, kw = pool_setup(N=400)
 print("Pool with chemisorption from the gas: error vs purge length (1 time unit = one residence time)")
 for kd in (1.0, 0.3):
     for tend in (20, 60, 200):

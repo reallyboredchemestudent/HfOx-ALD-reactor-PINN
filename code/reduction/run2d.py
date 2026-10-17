@@ -1,6 +1,6 @@
 import numpy as np, time, warnings
 warnings.filterwarnings('ignore')
-from reduce2d import *
+from reduce2d import build, steady_solve, time_solve
 from scipy.interpolate import RegularGridInterpolator
 W = 0.75
 gfun = lambda x: 1 + 0.4*x/(W/2)          # inlet 40% richer on one side

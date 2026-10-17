@@ -1,6 +1,6 @@
 import numpy as np, warnings
 warnings.filterwarnings('ignore')
-from reduce1d import *
+from reduce1d import BASE, gamma_pulse, square, steady_solve, time_solve
 P = BASE; Phi = P['tau_p']; N = 400; GPC_NM = 15.0   # ~15 nm saturated film over 100 cycles
 x = (np.arange(N)+0.5)/N
 _, ths = steady_solve(x, Pe=P['Pe'], A=P['A'], K=P['K'], Phi=Phi)
