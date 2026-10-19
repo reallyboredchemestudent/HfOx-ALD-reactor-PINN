@@ -13,16 +13,16 @@
 \begin{groupplot}[group style={group size=2 by 1, horizontal sep=0.6in}, table/col sep=comma, height=1.4in]
 % ---- (a) profile likelihood ---------------------------------------------------------------------------------------
 \nextgroupplot[width=1.7in, xlabel={upstream length $\Uup$ (\si{cm})}, ylabel={$\Delta\chisq$ (profile)},
-  xmin=0, xmax=26, ymin=0, ymax=12, legend style={at={(0.98,0.98)}, anchor=north east}]
-\addplot[fill=cMuted, fill opacity=0.2, draw=none, forget plot] coordinates {(0,0) (26,0) (26,3.84) (0,3.84)} -- cycle;
-\addplot[cFail, line width=0.6pt, densely dashed] coordinates {(0,3.84) (26,3.84)};
+  xmin=0, xmax=18, ymin=0, ymax=12, legend style={at={(0.98,0.98)}, anchor=north east, fill=white, fill opacity=0.9, text opacity=1}]
+\addplot[fill=cMuted, fill opacity=0.2, draw=none, forget plot] coordinates {(0,0) (18,0) (18,3.84) (0,3.84)} -- cycle;
+\addplot[cFail, line width=0.6pt, densely dashed] coordinates {(0,3.84) (18,3.84)};
 \addplot[cFV, line width=0.9pt, mark=square*, mark size=1.3pt] table[x=U, y=dchi2] {data/fig2_profile.csv};
 \addplot[only marks, mark=*, mark size=2pt, cObs] table[x=U, y=dchi2] {data/fig2_free.csv};
 \legend{95\,\% ($\Delta\chisq = 3.84$), profile, free fit}
 \panel{a}
 % ---- (b) rank test ------------------------------------------------------------------------------------------------
-\nextgroupplot[width=1.45in, ymode=log, xmin=0.6, xmax=4.4, ymin=1e-17, ymax=3, xtick={1,2,3,4},
-  ytick={1e-16,1e-12,1e-8,1e-4,1}, xlabel={singular value index}, ylabel={$\sigma_k/\sigma_1$},
+\nextgroupplot[width=1.45in, ymode=log, xmin=0.6, xmax=4.4, ymin=1e-5, ymax=3, xtick={1,2,3,4},
+  ytick={1e-4,1e-3,1e-2,1e-1,1}, xlabel={singular value index}, ylabel={$\sigma_k/\sigma_1$},
   legend style={at={(0.02,0.02)}, anchor=south west}]
 \addplot[cObs, line width=0.8pt, mark=o, mark size=1.6pt] table[x=k, y=sv] {data/fig2_rank_one.csv};
 \addplot[cFV, line width=0.9pt, densely dashed, mark=square*, mark size=1.4pt] table[x=k, y=sv] {data/fig2_rank_two.csv};
@@ -30,16 +30,16 @@
 \panel{b}
 \end{groupplot}
 % ---- (c) structural identifiability ---------------------------------------------------------------------------------
-\node[anchor=north west, font=\scriptsize] (T) at ([xshift=0.35in, yshift=0.12in]group c2r1.north east) {%
+\node[anchor=north west, font=\scriptsize] (T) at ([yshift=-0.62in]group c1r1.south west) {%
   \pgfplotstabletypeset[col sep=semicolon, string type, every head row/.style={before row=\toprule, after row=\midrule},
     every last row/.style={after row=\bottomrule},
     columns/design/.style={column name={design}, column type=l},
-    columns/reach/.style={column name={reach $E$}, column type=l},
-    columns/offset/.style={column name={offset $q$}, column type=l},
-    columns/combos/.style={column name={identifiable}, column type=l}]{data/fig2_si_table.csv}};
-\node[panel] at ([xshift=-0.1in, yshift=0.08in]T.north west) {(c)};
-\node[anchor=north west, font=\tiny, text=cInk2, align=left] at (T.south west)
-  {StructuralIdentifiability.jl, plug-flow front with $E = \mathrm{e}^{\reach/\zb}$,\\$q = \mathrm{e}^{(y+\Uup)/\zb}$; two doses: ratio 2 ($E_2 = E^2$)};
+    columns/reach/.style={column name={$E$ identifiable}, column type=c},
+    columns/offset/.style={column name={$q$ identifiable}, column type=c},
+    columns/combos/.style={column name={identifiable functions}, column type=l}]{data/fig2_si_table.csv}};
+\node[panel] at ([xshift=-0.36in, yshift=0.02in]T.north west) {(c)};
+\node[anchor=west, font=\tiny, text=cInk2, align=left] at ([xshift=0.15in]T.east)
+  {StructuralIdentifiability.jl, plug-flow front:\\reach $E = \mathrm{e}^{\reach/\zb}$, offset $q = \mathrm{e}^{(y+\Uup)/\zb}$;\\two doses: ratio 2 ($E_2 = E^2$)};
 \figcheck{fig2}
 \end{tikzpicture}
 \end{document}

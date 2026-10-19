@@ -1,0 +1,7 @@
+k,case,chi2,worst,nflag,flagged,label
+1,nominal,270.525,16.2719,0,0,none (control)
+2,second_order,509.703,49.5329,4,1,second order in gas
+3,flow_spike,274.999,16.2723,0,0,flow spike in pulse
+4,pool_unpurged,529.63,115.562,3,1,unpurged pool
+5,mediated,1029.66,205.641,6,1,pool-mediated
+6,surface_cvd,619.099,207.011,4,1,surface CVD

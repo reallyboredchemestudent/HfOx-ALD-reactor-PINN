@@ -32,7 +32,7 @@
 \node[panel] at (rel axis cs:0,1) [xshift=-3.6em, yshift=1.1em] {(a)};
 \end{axis}
 % ---- (b) broken assumptions ---------------------------------------------------------------------------------------
-\begin{axis}[name=B, at={(A.outer north east)}, anchor=outer north west, xshift=0.5in, width=2.0in, height=1.5in, xmode=log, xmin=3, xmax=3e4, log origin=infty, ymin=0.4, ymax=6.6, y dir=reverse,
+\begin{axis}[name=B, at={(A.outer north east)}, anchor=outer north west, xshift=0.75in, width=1.9in, height=1.5in, xmode=log, xmin=3, xmax=1e3, log origin=infty, ymin=0.4, ymax=6.6, y dir=reverse,
   ytick={1,...,6}, yticklabels from table={data/fig8_breaks.csv}{label},
   xlabel={worst wafer $\chisq$ (9 sites)}, table/col sep=comma, xmajorgrids]
 \addplot[xbar, bar width=6pt, fill=cFV!70, draw=none] table[x=worst, y=k] {data/fig8_breaks.csv};

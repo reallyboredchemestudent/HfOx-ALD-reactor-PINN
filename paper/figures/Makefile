@@ -45,7 +45,7 @@ png: $(PDFS)
 	@for f in $(FIGS); do pdftoppm -r 300 -png -singlefile build/$$f.pdf build/png/$$f; done
 
 preview: build/preview.pdf
-build/preview.pdf: preview.tex notation.tex $(PDFS)
+build/preview.pdf: preview.tex notation.tex $(wildcard build/fig*.pdf)
 	@$(LATEXMK) preview.tex > build/preview.out 2>&1 || { tail -40 build/preview.out; exit 1; }
 	@echo "built $@ ($$(pdfinfo $@ | awk '/Pages/{print $$2}') pages)"
 

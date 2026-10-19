@@ -40,7 +40,7 @@
 \nextgroupplot[heat, ylabel={$\Tdep$ (\si{\celsius})},
   title={ideal budget\\$\chisq = \pgfmathprintnumber[fixed, precision=0, 1000 sep={\mathord{,}}]{\chiI}$ on \pgfmathprintnumber{\nd}}]
 \heatmap{ideal}
-\node[panel] at (rel axis cs:0,1) [xshift=-3.0em, yshift=2.6em] {(a)};
+\node[panel] at (rel axis cs:0,1) [xshift=-3.0em, yshift=3.6em] {(a)};
 % ---- (b) measured budget ------------------------------------------------------------------------------------------
 \nextgroupplot[heat, yticklabels={}, colorbar right,
   title={measured budget\\$\chisq = \pgfmathprintnumber[fixed, precision=0]{\chiM}$ on \pgfmathprintnumber{\nd}},
@@ -49,9 +49,9 @@
     extra y tick labels={}, extra y tick style={major tick length=0.07in, tick style={draw=cFail, line width=0.9pt}},
     axis line style={draw=cInk2}}]
 \heatmap{measured}
-\node[panel] at (rel axis cs:0,1) [xshift=-1.9em, yshift=2.6em] {(b)};
+\node[panel] at (rel axis cs:0,1) [xshift=-1.9em, yshift=3.6em] {(b)};
 % ---- (c) site signature -------------------------------------------------------------------------------------------
-\nextgroupplot[width=1.95in, height=1.62in, xshift=0.78in,
+\nextgroupplot[width=1.95in, height=1.62in, xshift=1.0in,
   xmin=0.5, xmax=9.5, ymin=-9, ymax=10, xtick={1,...,9}, ytick={-5,0,5,10},
   xticklabels={4.5,6,6,7.5,7.5,7.5,9,9,10.5}, xlabel={site position $y$ along the flow (\si{cm})},
   ylabel={site $-$ wafer mean (\si{\percent})}, ymajorgrids,

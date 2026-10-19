@@ -103,19 +103,25 @@ def fig2():
     """Identifiability: profile likelihood of U at Lee's design, rank test one dose vs two, SI.jl verdicts."""
     P = np.load(src('si/profile_U.npy'))
     free_U, free_cost = P[0]; prof = P[1:][np.argsort(P[1:, 0])]
-    write('fig2_profile.csv', ['U', 'dchi2'], [(u, c - free_cost) for u, c in prof] )
+    # a refit capped at 25 evaluations (profile_lik.py) that ends 10^3+ above the optimum did not converge: it says
+    # nothing about U, so it is reported, not drawn
+    bad = prof[prof[:, 1] - free_cost > 1e3]; prof = prof[prof[:, 1] - free_cost <= 1e3]
+    write('fig2_profile.csv', ['U', 'dchi2'], [(u, c - free_cost) for u, c in prof])
+    check('fig2', 'profile refits that did not converge (not drawn)', ', '.join(f"U = {u:g} (dchi2 {c - free_cost:.3g})" for u, c in bad) or 'none',
+          'profile_lik.py caps each refit at 25 evaluations', True, info=True)
     write('fig2_free.csv', ['U', 'dchi2'], [(free_U, 0.0)])
     inside = prof[prof[:, 1] - free_cost <= 3.84, 0]
     check('fig2', 'U within the 95 % profile interval', f"{inside.min():.1f}-{inside.max():.1f} cm (grid)", 'README: upstream length 7.5-16 cm',
           True, info=True)
     # numerical rank test along the centreline, one dose vs two doses at the same deposition temperature
     from fvmodel import Grid, groups, solve, TRUTH_A
-    p = TRUTH_A.copy()
+    p = TRUTH_A.copy(); YOBS = np.linspace(0.0, 14.5, 59)
     def out(q, conds):
         grid = Grid(q[4], 30, 96); res = []
         for td, tp in conds:
             lam, zb, l, gpc = groups(q, td, tp); e, *_ = solve(grid, lam, zb, l, np.ones(grid.Nx))
-            res.append(1 - np.exp(-e.reshape(grid.Ny, grid.Nx)[:, grid.Nx//2]))
+            th = 1 - np.exp(-e.reshape(grid.Ny, grid.Nx)[:, grid.Nx//2])
+            res.append(np.interp(YOBS, grid.yc, th))          # fixed physical positions: the grid moves with U
         return np.concatenate(res)
     rows = []
     for label, conds in (('one dose', [(100.0, 55.0)]), ('two doses', [(100.0, 55.0), (100.0, 57.5)])):
@@ -130,7 +136,7 @@ def fig2():
     write('fig2_rank_two.csv', ['k', 'sv'], [r[1:] for r in rows if r[0] == 'two doses'])
     sv1 = [r[2] for r in rows if r[0] == 'one dose'][-1]; sv2 = [r[2] for r in rows if r[0] == 'two doses'][-1]
     check('fig2', 'smallest singular value (log lam, log zb, log l, U)', f"one dose {sv1:.1e}, two doses {sv2:.1e}",
-          'one dose: rank deficient; a second dose restores rank', sv1 < 1e-6 and sv2 > 1e-3)
+          'one dose: numerically rank deficient (< 1e-3; exact only for plug flow, SI.jl); two doses: > 1e-2', sv1 < 1e-3 and sv2 > 1e-2)
     # StructuralIdentifiability.jl verdicts, transcribed from its own output
     t = open(src('si_results.txt')).read(); rows = []
     for blk in re.split(r'=== model ', t)[1:]:
@@ -141,7 +147,7 @@ def fig2():
     # the two models that answer "one dose or two": a small table, typeset from this file (semicolon separated)
     funcs = {int(b.split(None, 1)[0]): re.search(r'identifiable functions \(with states\): (.*)', b).group(1)
              for b in re.split(r'=== model ', t)[1:]}
-    word = {'globally': 'identifiable', 'locally': 'locally', 'nonidentifiable': 'not identifiable'}
+    word = {'globally': 'yes', 'locally': 'locally', 'nonidentifiable': 'no'}
     with open(os.path.join(OUT, 'fig2_si_table.csv'), 'w') as f:
         f.write('design;reach;offset;combos\n')
         for m, lab in ((3, 'one dose'), (4, 'two doses')):

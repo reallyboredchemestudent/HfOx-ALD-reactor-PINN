@@ -6,3 +6,27 @@ fig1,aldFoam vs steady at matched mass,0.024 nm (reach 17.15 vs nominal 16 cm),c
 fig1,"gap 0.5 cm at twice the speed vs gap 1.0 cm (case D, not drawn)",1.656 nm,aldfoam_params.py says the depth-averaged equation predicts the same front; the README makes no claim,INFO
 fig3,mass-balance line chi2,1.15 on 3 (p = 0.77),README: chi2 1.2 / 3,FAIL
 fig3,reach x GPC constant over 100-200 C,CV 2.60 %,README: to 2.6 %,PASS
+fig4,"ideal budget, data chi2",21168.8 on 225,"README: chi2 21,124 / 225",FAIL
+fig4,"measured budget, data chi2",447.7 on 225,README: chi2 448,PASS
+fig4,per-wafer chi2 sums to the fit chi2 (measured),447.7 vs 447.7,integrity: within 0.5 %,PASS
+fig4,wafers flagged at p < 0.001 (chi2 > 27.9 on 9 sites),"ideal 25, measured 4 of 25",reported,INFO
+fig6,worst extrapolated-wafer RMSE,0.786 nm,README: <= 0.63 nm,FAIL
+fig6,"90 % interval coverage, 225-250 C",88.9 % of 90 sites,README: 94 %,FAIL
+fig8,nominal (control) is not flagged,0 wafers > 27.9,no false alarm,PASS
+fig8,broken assumptions flagged by residuals,4 of 5 (flow_spike not flagged),README: 4 of 5 flagged,PASS
+fig8,"flagged real wafers (measured budget, p < 0.001)","100/55, 125/55, 150/55, 200/55",reported,INFO
+fig9,"PINN physics within 3 sd of FV (all members, all-data fit)",3 of 7 parameters; worst |z| 19.7,reported,INFO
+fig9,NumPy PDE residual reproduces the saved one,grid rms^2 0.0363 (this condition) vs saved mean 0.0273 (all collocation),same order of magnitude,PASS
+fig2,profile refits that did not converge (not drawn),"U = 18 (dchi2 1.76e+05), U = 20 (dchi2 1.79e+05), U = 24 (dchi2 1.21e+05)",profile_lik.py caps each refit at 25 evaluations,INFO
+fig2,U within the 95 % profile interval,8.0-14.0 cm (grid),README: upstream length 7.5-16 cm,INFO
+fig2,"smallest singular value (log lam, log zb, log l, U)","one dose 5.7e-05, two doses 4.1e-02","one dose: numerically rank deficient (< 1e-3; exact only for plug flow, SI.jl); two doses: > 1e-2",PASS
+fig2,SI.jl: one dose,"{'q': 'nonidentifiable', 'E': 'nonidentifiable', 'a': 'globally'}",README: one dose fixes only the front position,PASS
+fig2,SI.jl: two doses,"{'q': 'globally', 'E': 'globally', 'a': 'globally'}",README: a second dose separates reach from upstream length,PASS
+fig5,held-out wafer excluded from every PINN member,10/10 seeds x 5 holds,n_data(hold) = n_data(all) - 9,PASS
+fig5,FV held-out RMSE range,1.08-2.31 nm,README: 1.0-2.6 nm,FAIL
+fig5,PINN held-out RMSE range,1.65-3.91 nm,README: 1.6-3.9 nm,PASS
+fig5,FV 90 % interval coverage,95.6 % of 45 sites (5 wafers),README: 96 %,PASS
+fig5,PINN 90 % interval coverage,80.0 %,README: 80 %,PASS
+fig5,FV beats PINN on every held-out wafer,5/5,README: the PINN predicts held-out wafers worse,PASS
+fig5,PINN fits the training wafers better,chi2 188-266 vs FV 448 on 225,README: chi2 ~220 vs 448,PASS
+fig5,PINN rows reproduce the workstation run,max |diff| 0,"same files, same RNG",PASS

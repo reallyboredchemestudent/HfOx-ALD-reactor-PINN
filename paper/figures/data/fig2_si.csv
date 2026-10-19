@@ -1,0 +1,13 @@
+model,description,parameter,verdict
+1,"plug flow, one profile",w,globally
+1,"plug flow, one profile",a,globally
+2,"with axial dispersion, one profile",w,globally
+2,"with axial dispersion, one profile",v,globally
+2,"with axial dispersion, one profile",a,globally
+2,"with axial dispersion, one profile",b,globally
+3,"plug flow, explicit reach E = exp(lam/zb) and offset q = exp((y+U)/zb), one dose",q,nonidentifiable
+3,"plug flow, explicit reach E = exp(lam/zb) and offset q = exp((y+U)/zb), one dose",E,nonidentifiable
+3,"plug flow, explicit reach E = exp(lam/zb) and offset q = exp((y+U)/zb), one dose",a,globally
+4,"plug flow, two doses at one deposition temperature (dose ratio 2: E2 = E^2)",q,globally
+4,"plug flow, two doses at one deposition temperature (dose ratio 2: E2 = E^2)",E,globally
+4,"plug flow, two doses at one deposition temperature (dose ratio 2: E2 = E^2)",a,globally

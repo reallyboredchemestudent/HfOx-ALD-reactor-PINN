@@ -6,7 +6,8 @@
 \usepackage{graphicx,amsmath,amssymb,siunitx,caption,xcolor}
 \captionsetup{font=small, labelfont=bf}
 \input{notation}
-\newcommand{\fig}[2]{\begin{figure}[p]\centering\includegraphics{build/#1.pdf}\caption{#2}\end{figure}}
+\newcommand{\fig}[2]{\begin{figure}[p]\centering\IfFileExists{build/#1.pdf}{\includegraphics{build/#1.pdf}}%
+  {\fbox{\parbox[c][1.5in][c]{6in}{\centering figure not built yet (\texttt{\detokenize{#1}})}}}\caption{#2}\end{figure}}
 \renewcommand{\thefigure}{\arabic{figure}}
 \begin{document}
 \section*{Figures (draft captions)}
