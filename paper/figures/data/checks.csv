@@ -30,3 +30,6 @@ fig5,PINN 90 % interval coverage,80.0 %,README: 80 %,PASS
 fig5,FV beats PINN on every held-out wafer,5/5,README: the PINN predicts held-out wafers worse,PASS
 fig5,PINN fits the training wafers better,chi2 188-266 vs FV 448 on 225,README: chi2 ~220 vs 448,PASS
 fig5,PINN rows reproduce the workstation run,max |diff| 0,"same files, same RNG",PASS
+fig7,"whole-wafer dose multiplier, 100-250 C",x1.16-1.70,README: 1.2-1.7x the 55 C dose,PASS
+fig7,setpoint source temperature 100 -> 250 C,65.2 -> 59.6 C,README: 65 C falling to 60 C,PASS
+fig7,setpoint dose covers the whole wafer (model),min coverage 1.000,threshold 0.98 (process_window.py),PASS

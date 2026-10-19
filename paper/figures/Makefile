@@ -10,7 +10,7 @@
 #
 # A figure whose check failed still builds, with a red stamp naming the check: it is never silently polished.
 SHELL   := /bin/bash
-FIGS    := $(sort $(basename $(wildcard fig*.tex)))
+FIGS    := $(sort $(basename $(filter-out figstyle.tex,$(wildcard fig*.tex))))
 PDFS    := $(addprefix build/,$(addsuffix .pdf,$(FIGS)))
 DATA    := $(wildcard data/*)
 LATEXMK := latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error -outdir=build
@@ -32,7 +32,7 @@ check: $(PDFS)
 	@test -f data/checks.csv || { echo "no data/checks.csv: run make data"; exit 1; }
 	@bad=0; for f in $(PDFS); do w=$$(pdfinfo $$f | awk '/Page size/{print $$3/72}'); \
 	  if awk "BEGIN{exit !($$w > 6.5 + 0.005)}"; then echo "TOO WIDE: $$f is $$w in (text width 6.5 in)"; bad=1; fi; done; \
-	 if grep -q ',FAIL$$' data/checks.csv; then echo "FAILED checks:"; grep ',FAIL$$' data/checks.csv; bad=1; fi; \
+	 if grep -qE ',FAIL[[:space:]]*$$' data/checks.csv; then echo "FAILED checks:"; grep -E ',FAIL[[:space:]]*$$' data/checks.csv; bad=1; fi; \
 	 if [ $$bad = 0 ]; then echo "all figure checks passed; every figure fits the 6.5 in text width"; fi; exit $$bad
 
 gray: $(PDFS)
