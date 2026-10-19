@@ -1,0 +1,82 @@
+% Fig. 7. Where the model can be trusted, and the process window it gives.
+% (a) the design: which wafers were fitted, held out one at a time, or never seen; (b) dose needed for full coverage
+% (5-95 % band) at the 9 measured sites and on the whole wafer, against deposition temperature; (c, d) model coverage
+% on the whole 100 mm wafer at 100 C, at the 55 C-source dose and at the setpoint dose. Dashed: |x| = 3 cm, the
+% across-flow range in which the inlet profile is constrained by measured sites.
+% Data: data/fig7_*.csv, data/fig7_field_*.png  (code/export_figdata.py fig7  <-  results/process_window.csv,
+%       recal_fit_td100-200.json; the fields are solved here with code/fvmodel.py at the fitted parameters)
+\documentclass{standalone}
+\input{figstyle}
+\input{data/cmap_blues}
+\pgfplotstableread[col sep=comma]{data/fig7_fields.csv}\fields
+\pgfplotstablegetelem{0}{xmin}\of\fields\let\fxa\pgfplotsretval
+\pgfplotstablegetelem{0}{xmax}\of\fields\let\fxb\pgfplotsretval
+\pgfplotstablegetelem{0}{ymin}\of\fields\let\fya\pgfplotsretval
+\pgfplotstablegetelem{0}{ymax}\of\fields\let\fyb\pgfplotsretval
+\pgfplotstablegetelem{1}{mult}\of\fields\let\setm\pgfplotsretval
+\pgfplotstableread[col sep=comma]{data/fig7_window.csv}\win
+\pgfplotstablegetrowsof{\win}\let\nwin\pgfplotsretval
+\pgfmathtruncatemacro\lastrow{\nwin-1}
+\pgfplotstablegetelem{0}{wafer_setpoint_Tp_C}\of\win\let\tpA\pgfplotsretval
+\pgfplotstablegetelem{\lastrow}{wafer_setpoint_Tp_C}\of\win\let\tpB\pgfplotsretval
+\pgfplotsset{
+  wafermap/.style={width=0.92in, height=0.92in, axis equal image, xmin=-5.3, xmax=5.3, ymin=2.2, ymax=12.8,
+    xtick={-5,0,5}, ytick={2.5,7.5,12.5}, xlabel={$x$ (\si{cm})}, axis line style={draw=none}, tick style={draw=none},
+    point meta min=0, point meta max=1, colormap name=blues},
+}
+\newcommand{\wafer}[1]{%
+  \addplot graphics[xmin=\fxa, xmax=\fxb, ymin=\fya, ymax=\fyb] {data/fig7_field_#1.png};
+  \draw[cInk2, line width=0.4pt] (axis cs:0,7.5) circle[radius=5];
+  \draw[cInk2, line width=0.4pt, densely dashed] (axis cs:-3,3.0) -- (axis cs:-3,12.0) (axis cs:3,3.0) -- (axis cs:3,12.0);
+  \addplot[only marks, mark=+, mark size=1.8pt, black, line width=0.6pt] table[col sep=comma, x=x, y=y] {data/fig7_sites.csv};
+  \draw[-{Stealth[length=3pt]}, cInk2] (axis cs:-4.9,2.4) -- (axis cs:-4.9,4.6) node[midway, left, font=\tiny, inner sep=1pt] {flow};}
+\begin{document}
+\begin{tikzpicture}
+% ---- (a) design ---------------------------------------------------------------------------------------------------
+\begin{axis}[name=A, width=0.72in, height=1.45in, xmin=52, xmax=78, ymin=87, ymax=263, y dir=reverse,
+  xtick={55,65,75}, ytick={100,125,150,175,200,225,250}, xlabel={$\Tsrc$ (\si{\celsius})}, ylabel={$\Tdep$ (\si{\celsius})},
+  table/col sep=comma, legend style={at={(0.5,-0.25)}, anchor=north, font=\tiny}, legend columns=1]
+\addplot[only marks, mark=square*, mark size=1.7pt, cObs, only={fitted}{1}] table[x=Tp, y=Td] {data/fig7_design.csv};
+\addplot[only marks, mark=diamond*, mark size=2.3pt, cPINN, only={heldout}{1}] table[x=Tp, y=Td] {data/fig7_design.csv};
+\addplot[only marks, mark=square, mark size=1.7pt, cMuted, only={extrap}{1}] table[x=Tp, y=Td] {data/fig7_design.csv};
+\legend{fitted, held out in turn, extrapolated}
+\node[panel] at (rel axis cs:0,1) [xshift=-3.4em, yshift=1.1em] {(a)};
+\end{axis}
+% ---- (b) process window -------------------------------------------------------------------------------------------
+\begin{axis}[name=B, at={(A.outer north east)}, anchor=outer north west, xshift=0.04in, width=1.55in, height=1.45in,
+  xmin=95, xmax=255, ymin=0.8, ymax=2.25, xlabel={$\Tdep$ (\si{\celsius})},
+  ylabel={dose ($\times$ \SI{55}{\celsius}-source dose)},
+  table/col sep=comma, legend style={at={(0.02,0.02)}, anchor=south west}]
+\fill[cGrid, opacity=0.6] (axis cs:200,0.8) rectangle (axis cs:255,2.25);
+\node[font=\tiny, text=cInk2, anchor=north] at (axis cs:227.5,2.22) {extrapolated};
+\addplot[name path=wl, draw=none, forget plot] table[x=Td, y=wafer_p5] {data/fig7_window.csv};
+\addplot[name path=wh, draw=none, forget plot] table[x=Td, y=wafer_p95] {data/fig7_window.csv};
+\addplot[cFV, fill opacity=0.22, draw=none, forget plot] fill between[of=wl and wh];
+\addplot[name path=sl, draw=none, forget plot] table[x=Td, y=sites_p5] {data/fig7_window.csv};
+\addplot[name path=sh, draw=none, forget plot] table[x=Td, y=sites_p95] {data/fig7_window.csv};
+\addplot[cMuted, fill opacity=0.25, draw=none, forget plot] fill between[of=sl and sh];
+\addplot[cFV, line width=0.9pt] table[x=Td, y=wafer_p50] {data/fig7_window.csv};
+\addplot[cInk2, line width=0.9pt, densely dashed] table[x=Td, y=sites_p50] {data/fig7_window.csv};
+\addplot[cObs, line width=0.6pt, densely dotted, mark=*, mark size=0.9pt] table[x=Td, y=wafer_setpoint] {data/fig7_window.csv};
+\addplot[sGuide, forget plot] coordinates {(95,1) (255,1)};
+\legend{whole wafer, 9 sites, setpoint (wafer)}
+\node[font=\tiny, text=cObs, anchor=south west, inner sep=1pt] at (axis cs:100,2.05) {\pgfmathprintnumber[fixed, precision=1]{\tpA}\,\si{\celsius}};
+\node[font=\tiny, text=cObs, anchor=north east, inner sep=1pt] at (axis cs:253,1.35) {\pgfmathprintnumber[fixed, precision=1]{\tpB}\,\si{\celsius}};
+\node[panel] at (rel axis cs:0,1) [xshift=-3.0em, yshift=1.1em] {(b)};
+\end{axis}
+% ---- (c, d) model coverage on the whole wafer ---------------------------------------------------------------------
+\begin{axis}[name=C, wafermap, at={(B.outer north east)}, anchor=outer north west, xshift=0.04in, ylabel={$y$ (\si{cm})},
+  title={measured dose}, title style={at={(0.5,1)}, anchor=south, xshift=0pt, font=\scriptsize, align=center}]
+\wafer{measured}
+\node[panel] at (rel axis cs:0,1) [xshift=-2.9em, yshift=2.3em] {(c)};
+\end{axis}
+\begin{axis}[name=D, wafermap, at={(C.east)}, anchor=west, xshift=0.08in, yticklabels={},
+  title={setpoint, $\times$\pgfmathprintnumber[fixed, precision=2]{\setm}}, title style={at={(0.5,1)}, anchor=south, xshift=0pt, font=\scriptsize, align=center},
+  colorbar right, colorbar style={width=0.06in, ytick={0,0.5,1}, ylabel={$\cov$ (model)}, yticklabel style={font=\tiny},
+    ylabel style={font=\scriptsize}}]
+\wafer{setpoint}
+\node[panel] at (rel axis cs:0,1) [xshift=-0.6em, yshift=2.3em] {(d)};
+\end{axis}
+\figcheck{fig7}
+\end{tikzpicture}
+\end{document}

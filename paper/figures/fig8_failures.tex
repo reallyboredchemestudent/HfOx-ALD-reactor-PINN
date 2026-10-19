@@ -1,0 +1,45 @@
+% Fig. 8. Where the model fails.
+% (a) standardised residual of every site of every wafer under the measured budget (rows: wafers, T_src 55 -> 75 C
+%     within each deposition temperature; columns: sites along the flow). Below the dashed line: wafers the fit never
+%     saw. Markers: wafers flagged at p < 0.001 (chi^2 > 27.9 on 9 sites).
+% (b) synthetic wafers made with one steady-exposure assumption broken, fitted with the steady model: worst wafer's
+%     chi^2. The nominal (unbroken, transient) case is the control.
+% Data: data/fig8_*.csv  (code/export_figdata.py fig8  <-  results/recal_per_wafer_td100-200.csv,
+%       results/si/breakfit_<case>.npz from code/run_breaks.py)
+\documentclass{standalone}
+\input{figstyle}
+\pgfplotsset{colormap={resid}{rgb=(0.433,0.249,0.029) rgb=(0.671,0.432,0.123) rgb=(0.843,0.696,0.410)
+  rgb=(0.954,0.892,0.732) rgb=(0.961,0.960,0.957) rgb=(0.748,0.904,0.881) rgb=(0.427,0.750,0.707)
+  rgb=(0.128,0.517,0.485) rgb=(0.002,0.313,0.273)}}
+\begin{document}
+\begin{tikzpicture}
+% ---- (a) residual map of the whole design -------------------------------------------------------------------------
+\begin{axis}[name=A, clip=false, width=1.25in, height=2.75in, y dir=reverse, xmin=0.5, xmax=9.5, ymin=0.5, ymax=35.5,
+  enlargelimits=false, xtick={1,...,9}, xticklabels={4.5,6,6,7.5,7.5,7.5,9,9,10.5},
+  xticklabel style={rotate=90, anchor=east, font=\tiny}, xlabel={site $y$ (\si{cm})},
+  ytick=\empty, extra y ticks={3,8,13,18,23,28,33}, extra y tick labels={100,125,150,175,200,225,250},
+  extra y tick style={tick style={draw=none}}, ylabel={$\Tdep$ (\si{\celsius})},
+  axis line style={draw=none}, tick style={draw=none},
+  colormap name=resid, point meta min=-4, point meta max=4,
+  colorbar right, colorbar style={width=0.06in, ytick={-4,-2,0,2,4}, yticklabels={$\leq -4$,$-2$,0,2,$\geq 4$},
+    ylabel={standardised residual}, yticklabel style={font=\tiny}, ylabel style={font=\scriptsize}, xshift=0.18in},
+  table/col sep=comma]
+\addplot[matrix plot*, mesh/cols=9, point meta=explicit, draw=none] table[x=pos, y=row, meta=zc] {data/fig8_heat.csv};
+\pgfplotsinvokeforeach{5.5,10.5,15.5,20.5,30.5}{\draw[white, line width=1.2pt] (axis cs:0.5,#1) -- (axis cs:9.5,#1);}
+\draw[black, line width=0.7pt, densely dashed] (axis cs:0.3,25.5) -- (axis cs:9.7,25.5);
+\addplot[only marks, mark=triangle*, mark size=1.6pt, mark options={rotate=90}, cObs, unbounded coords=discard, clip marker paths=false]
+  table[x expr=10.0, y=flagrow] {data/fig8_rows.csv};
+\node[panel] at (rel axis cs:0,1) [xshift=-3.6em, yshift=1.1em] {(a)};
+\end{axis}
+% ---- (b) broken assumptions ---------------------------------------------------------------------------------------
+\begin{axis}[name=B, at={(A.outer north east)}, anchor=outer north west, xshift=0.5in, width=2.0in, height=1.5in, xmode=log, xmin=3, xmax=3e4, log origin=infty, ymin=0.4, ymax=6.6, y dir=reverse,
+  ytick={1,...,6}, yticklabels from table={data/fig8_breaks.csv}{label},
+  xlabel={worst wafer $\chisq$ (9 sites)}, table/col sep=comma, xmajorgrids]
+\addplot[xbar, bar width=6pt, fill=cFV!70, draw=none] table[x=worst, y=k] {data/fig8_breaks.csv};
+\addplot[cFail, line width=0.8pt, densely dashed] coordinates {(27.88,0.4) (27.88,6.6)};
+\node[font=\tiny, text=cFail, anchor=south west, inner sep=1pt] at (axis cs:30,0.4) {$p = 0.001$};
+\node[panel] at (rel axis cs:0,1) [xshift=-6.2em, yshift=1.1em] {(b)};
+\end{axis}
+\figcheck{fig8}
+\end{tikzpicture}
+\end{document}

@@ -5,6 +5,7 @@ on:
   pull_request:
   schedule:
     - cron: "17 6 * * 1"     # weekly: catches a new upstream release that moves a number, even with no commits here
+  workflow_dispatch:
 
 jobs:
   lint:
@@ -48,3 +49,59 @@ jobs:
         with: { python-version: "3.13" }
       - run: pip install -r requirements.txt pytest
       - run: pytest -q
+
+  figures:
+    # Every paper figure builds from the committed data (paper/figures/data/), fits the 6.5 in text width, and every
+    # figure's check passes. A failed check fails this job; the figure itself still builds, stamped with the check.
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: TeX Live
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended \
+            texlive-latex-extra texlive-pictures texlive-science latexmk poppler-utils
+      - run: make -C paper/figures all preview gray
+      - run: make -C paper/figures check
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: figures
+          path: |
+            paper/figures/build/*.pdf
+            paper/figures/build/gray/*.png
+            paper/figures/data/checks.csv
+
+  figures-from-clean-clone:
+    # Rebuild every figure's data from a clean clone and compare it with the committed data: the FV pipeline from
+    # data/, the stages that need JAX, OpenFOAM or Julia from frozen/ (see frozen/README.md), the synthetic
+    # identifiability and broken-assumption runs, then the export. Weekly and on demand: it takes about an hour.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 240
+    env: { OMP_NUM_THREADS: "1", OPENBLAS_NUM_THREADS: "1", MKL_NUM_THREADS: "1" }
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -r requirements-lock.txt
+      - name: TeX Live
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended \
+            texlive-latex-extra texlive-pictures texlive-science latexmk poppler-utils
+      - name: keep the committed figure data as the reference
+        run: cp -r paper/figures/data "$RUNNER_TEMP/committed"
+      - run: bash run_all.sh load collapse fitregime recal frozen comparem window si figdata
+      - name: regenerated data agree with the committed data
+        run: python code/compare_figdata.py "$RUNNER_TEMP/committed" paper/figures/data
+      - run: make -C paper/figures all preview check
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: figures-from-clean-clone
+          path: |
+            paper/figures/build/*.pdf
+            paper/figures/data/
+            results/logs/
+

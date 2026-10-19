@@ -1,0 +1,66 @@
+% Fig. 1. The pulsed reactor reduces exactly to a steady exposure equation.
+% (a) schematic; (b) aldFoam (OpenFOAM-10, transient, gap-resolved) final coverage for three equal-dose pulses against
+% the steady exposure solution; (c) differences in nm of film.
+% Data: data/fig1_*.csv  (code/export_figdata.py fig1  <-  results/aldfoam_{gap1.0,dtcheck}/aldfoam_compare.csv,
+%       steady solutions recomputed with code/gapresolved.py)
+\documentclass{standalone}
+\input{figstyle}
+\begin{document}
+\begin{tikzpicture}[font=\footnotesize]
+% ======================= (a) schematic ==============================================================================
+\begin{scope}[x=1in, y=1in]
+  \node[panel] at (-0.33, 0.80) {(a)};
+  % pulse trains: equal area, different height and length
+  \def\pulse#1#2#3#4{% x0, length (in), height (in), style
+    \draw[#4, line width=0.8pt] (#1,0) -- (#1,#3) -- ({#1+#2},#3) -- ({#1+#2},0);}
+  \draw[-{Stealth[length=3pt]}, cInk2, line width=0.4pt] (-0.05,0) -- (2.05,0) node[below left, inner sep=1pt, text=cInk2] {$t$};
+  \draw[-{Stealth[length=3pt]}, cInk2, line width=0.4pt] (0,-0.03) -- (0,0.62) node[left, inner sep=1pt, text=cInk2, align=right] {$p_{\mathrm{in}}$};
+  \pulse{0.12}{0.05}{0.48}{cAlt2, densely dashed}
+  \pulse{0.12}{0.12}{0.20}{cFV}
+  \pulse{0.12}{0.24}{0.10}{cAlt, densely dotted}
+  \node[anchor=west, font=\scriptsize, text=cInk2] at (0.44,0.34)
+       {\begin{tabular}{@{}l@{\;}l@{}}B & \SI{0.05}{s} at $4p_0$\\ A & \SI{0.2}{s} at $p_0$\\ C & \SI{0.4}{s} at $p_0/2$\\[1pt]
+        \multicolumn{2}{@{}l}{equal dose $\int p_{\mathrm{in}}\,\mathrm{d}t$}\end{tabular}};
+  \draw[decorate, decoration={brace, amplitude=3pt, mirror}, cInk2] (0.4,-0.03) -- (1.95,-0.03)
+        node[midway, below=2pt, font=\scriptsize, text=cInk2] {purge clears the gas};
+  % reduction arrow
+  \draw[-{Stealth[length=4pt]}, line width=0.6pt] (1.0,-0.24) -- (1.0,-0.44)
+        node[midway, right, font=\scriptsize, align=left, text=cInk2] {integrate over pulse\\[-1pt] and purge};
+  % steady equation
+  \node[draw=cInk2, line width=0.4pt, rounded corners=1.5pt, inner sep=3.5pt, anchor=north, align=center] (eq) at (1.0,-0.48)
+    {$\displaystyle \partial_y(\expo - \disp\,\partial_y \expo) - \disp\,\partial_x^2 \expo + \tfrac{1}{\zb}\bigl(1 - \mathrm{e}^{-\expo}\bigr) = 0$\\[2pt]
+     $\cov = 1 - \mathrm{e}^{-\expo}$, \quad inlet flux $\propto \reach/\zb$};
+  \node[anchor=north, font=\scriptsize, align=center, text=cInk2] at (eq.south)
+    {exact if the wall reaction is first order in the gas,\\[-1pt] the flow is steady and the purge clears the gas};
+\end{scope}
+% ======================= (b), (c) ===================================================================================
+\begin{scope}[xshift=2.62in, yshift=-0.92in]
+\begin{groupplot}[
+  group style={group size=2 by 1, horizontal sep=0.55in},
+  width=1.3in, height=1.6in, table/col sep=comma,
+  xmin=0, xmax=24, xtick={0,6,12,18,24}, xlabel={distance along the flow (\si{cm})},
+]
+\nextgroupplot[ylabel={final wall coverage $\cov$}, ymin=0, ymax=1.06, ytick={0,0.5,1},
+  legend style={at={(0.02,0.02)}, anchor=south west}]
+\addplot[cMuted, line width=3pt, opacity=0.45] table[x=y, y=steady_nominal] {data/fig1_profiles.csv};
+\addplot[cObs, line width=0.6pt, densely dashed] table[x=y, y=steady_matched] {data/fig1_profiles.csv};
+\addplot[cFV, line width=0.8pt] table[x=y, y=A] {data/fig1_profiles.csv};
+\addplot[cAlt2, line width=0.8pt, densely dashed] table[x=y, y=B] {data/fig1_profiles.csv};
+\addplot[cAlt, line width=0.8pt, densely dotted] table[x=y, y=C] {data/fig1_profiles.csv};
+\legend{steady (nominal dose), steady (matched mass), aldFoam A, aldFoam B, aldFoam C}
+\panel{b}
+\nextgroupplot[ylabel={$\Delta\cov\times\SI{15}{nm}$ (\si{nm})}, 
+  yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2},
+  legend style={at={(0.01,0.99)}, anchor=north west}, ymax=0.085, ymin=-0.04, ytick={-0.04,-0.02,0,0.02,0.04}, scaled y ticks=false]
+\addplot[sGuide] coordinates {(0,0) (24,0)};
+% B at the default time step (0.13 nm, not converged in time) is in data/fig1_diff.csv (dBcoarse) and checks.csv, not drawn
+\addplot[cAlt2, line width=0.8pt, densely dashed] table[x=y, y=dB] {data/fig1_diff.csv};
+\addplot[cAlt, line width=0.8pt, densely dotted] table[x=y, y=dC] {data/fig1_diff.csv};
+\addplot[cObs, line width=0.6pt] table[x=y, y=dMatched] {data/fig1_diff.csv};
+\legend{, B $-$ A, C $-$ A, A $-$ steady (matched mass)}
+\panel{c}
+\end{groupplot}
+\end{scope}
+\figcheck{fig1}
+\end{tikzpicture}
+\end{document}

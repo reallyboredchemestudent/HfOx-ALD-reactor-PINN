@@ -162,10 +162,11 @@ def compare():
         h = CONDS.index((float(r['Td']), float(r['Tp'])))
         FVR[h] = {k: np.array([float(r[f'{k}{i}']) for i in range(9)]) for k in ('pred', 'lo', 'hi')}
     a, b = (A.seeds.split('-') + [None])[:2]; seeds = list(range(int(a), int(b) + 1)) if b else [int(v) for v in A.seeds.split(',')]
-    rng = np.random.default_rng(11); out = []
+    rng = np.random.default_rng(11); out = []; sites = []      # sites: per-site intervals for the figures (no RNG use)
     for h, r in sorted(FVR.items()):
         obs = Y[h]; ok = np.isfinite(obs)
         out.append(('FV', h, np.sqrt(np.mean((obs - r['pred'])[ok]**2)), np.mean(((obs >= r['lo']) & (obs <= r['hi']))[ok]), np.mean((r['hi'] - r['lo'])[ok]), 1, np.nan))
+        sites += [('FV', h, i, obs[i], r['pred'][i], r['lo'][i], r['hi'][i]) for i in range(9)]
         zs = [np.load(f) for s_ in seeds for f in glob.glob(os.path.join(A.out, f'pinn_{A.tag}_s{s_}_h{h}.npz'))]
         if not zs: continue
         best = min(float(z['comp'][2]) for z in zs); good = [z for z in zs if float(z['comp'][2]) <= 1.25*best]
@@ -184,6 +185,11 @@ def compare():
         lo_, hi_, med = np.percentile(sm, 5, 0), np.percentile(sm, 95, 0), np.median(sm, 0)
         pde = np.median([float(z['comp'][0]) for z in good])
         out.append(('PINN', h, np.sqrt(np.mean((obs - med)[ok]**2)), np.mean(((obs >= lo_) & (obs <= hi_))[ok]), np.mean((hi_ - lo_)[ok]), len(good), pde))
+        sites += [('PINN', h, i, obs[i], med[i], lo_[i], hi_[i]) for i in range(9)]
+    with open(os.path.join(A.out, f'recal_compare_sites_{A.tag}.csv'), 'w', newline='') as f:
+        w = csv.writer(f); w.writerow(['method', 'Td', 'Tp', 'site', 'x_cm', 'y_cm', 'obs_nm', 'pred_nm', 'lo90_nm', 'hi90_nm'])
+        for m_, h, i, ob, pr, l_, u_ in sites:
+            w.writerow([m_, CONDS[h][0], CONDS[h][1], i, FV.SITES[i, 0], FV.SITES[i, 1], ob, round(pr, 4), round(l_, 4), round(u_, 4)])
     with open(os.path.join(A.out, f'recal_compare_{A.tag}.csv'), 'w', newline='') as f:
         w = csv.writer(f); w.writerow(['method', 'Td', 'Tp', 'rmse_nm', 'inside90', 'mean_width_nm', 'members', 'pinn_pde_residual'])
         for row in out:

@@ -1,0 +1,44 @@
+% Fig. 6. Extrapolation: the FV model fitted on 100-200 C predicts the ten 225-250 C wafers it never saw.
+% (a) observed against predicted thickness, with 90 % prediction intervals; (b) each site's error in units of its own
+% interval half-width (|z| <= 1: inside the 90 % interval).
+% Data: data/fig6_*.csv  (code/export_figdata.py fig6  <-  results/recal_extrap_td100-200.csv)
+\documentclass{standalone}
+\input{figstyle}
+\pgfplotstableread[col sep=comma]{data/fig6_stats.csv}\stats
+\pgfplotstablegetelem{0}{worst}\of\stats\let\worst\pgfplotsretval
+\pgfplotstablegetelem{0}{coverage}\of\stats\let\covg\pgfplotsretval
+\pgfplotstablegetelem{0}{n}\of\stats\let\nsites\pgfplotsretval
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1, horizontal sep=0.62in}, table/col sep=comma]
+% ---- (a) parity ---------------------------------------------------------------------------------------------------
+\nextgroupplot[width=1.75in, height=1.75in, xmin=9.5, xmax=13.5, ymin=9.5, ymax=13.5, axis equal image,
+  xlabel={observed thickness (\si{nm})}, ylabel={predicted thickness (\si{nm})},
+  legend style={at={(0.02,0.98)}, anchor=north west}]
+\addplot[sGuide, forget plot] coordinates {(9.5,9.5) (13.5,13.5)};
+\addplot[cFV, only marks, mark=*, mark size=1.2pt,
+         error bars/.cd, y dir=both, y explicit, error bar style={cFV!45, line width=0.4pt}, error mark=none]
+  table[x=obs, y=pred, y error plus=ehi, y error minus=elo] {data/fig6_sites_225.csv};
+\addplot[cObs, only marks, mark=triangle, mark size=1.7pt,
+         error bars/.cd, y dir=both, y explicit, error bar style={cMuted, line width=0.4pt}, error mark=none]
+  table[x=obs, y=pred, y error plus=ehi, y error minus=elo] {data/fig6_sites_250.csv};
+\legend{\SI{225}{\celsius}, \SI{250}{\celsius}}
+\node[anchor=south east, font=\scriptsize, text=cInk2, align=right, fill=white, inner sep=1pt] at (rel axis cs:0.98,0.02)
+  {worst wafer\\RMSE \pgfmathprintnumber[fixed, precision=2]{\worst}\,nm};
+\panel{a}
+% ---- (b) standardised error per site ------------------------------------------------------------------------------
+\nextgroupplot[width=3.0in, height=1.75in, xmin=0.5, xmax=9.5, ymin=-3.2, ymax=3.2,
+  xtick={1,...,9}, xticklabels={4.5,6,6,7.5,7.5,7.5,9,9,10.5}, ytick={-3,-2,-1,0,1,2,3},
+  xlabel={site position $y$ along the flow (\si{cm})}, ylabel={error / 90\,\% half-width},
+  legend style={at={(0.99,0.98)}, anchor=north east}, legend columns=2]
+\addplot[fill=cMuted, fill opacity=0.18, draw=none, forget plot] coordinates {(0.5,-1) (9.5,-1) (9.5,1) (0.5,1)} -- cycle;
+\addplot[sGuide, forget plot] coordinates {(0.5,0) (9.5,0)};
+\addplot[cFV, only marks, mark=*, mark size=1.2pt, only={Td}{225}] table[x=jit, y=z] {data/fig6_sites.csv};
+\addplot[cObs, only marks, mark=triangle, mark size=1.7pt, only={Td}{250}] table[x=jit, y=z] {data/fig6_sites.csv};
+\legend{\SI{225}{\celsius}, \SI{250}{\celsius}}
+\node[anchor=south west, font=\scriptsize, text=cInk2] at (rel axis cs:0.02,0.02) {shaded: inside the 90\,\% interval (\pgfmathprintnumber[fixed, precision=0]{\covg}\,\% of \pgfmathprintnumber{\nsites} sites)};
+\panel{b}
+\end{groupplot}
+\figcheck{fig6}
+\end{tikzpicture}
+\end{document}

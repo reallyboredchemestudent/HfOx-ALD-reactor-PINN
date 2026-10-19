@@ -1,0 +1,63 @@
+% Fig. 3. The real wafers obey mass balance.
+% Data: data/fig3_*.csv  (code/export_figdata.py fig3  <-  results/collapse_points.csv, collapse_summary.json)
+\documentclass{standalone}
+\input{figstyle}
+\pgfplotstableread[col sep=comma]{data/fig3_stats.csv}\stats
+\pgfplotstablegetelem{0}{chi2}\of\stats\let\chisqv\pgfplotsretval
+\pgfplotstablegetelem{0}{dof}\of\stats\let\dofv\pgfplotsretval
+\pgfplotstablegetelem{0}{cv}\of\stats\let\cvv\pgfplotsretval
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[
+  group style={group size=3 by 1, horizontal sep=0.62in},
+  width=1.55in, height=1.42in,
+  table/col sep=comma,
+]
+% ---- (a) measured coverage along the flow, 55 C source --------------------------------------------------------------
+\nextgroupplot[
+  xlabel={distance along the flow, $y$ (\si{cm})}, ylabel={coverage $\cov$},
+  xmin=3.6, xmax=11.4, ymin=0, ymax=1.12, xtick={4.5,6,7.5,9,10.5}, ytick={0,0.5,1},
+  legend style={at={(0.03,0.03)}, anchor=south west}, legend columns=1,
+]
+\pgfplotsinvokeforeach{100,125,150,175,200}{
+  \addplot[T#1, only marks, only={Td}{#1}] table[x=y, y=cov] {data/fig3_points.csv};
+}
+\legend{\SI{100}{\celsius},\SI{125}{\celsius},\SI{150}{\celsius},\SI{175}{\celsius},\SI{200}{\celsius}}
+\panel{a}
+% ---- (b) the same points against reach-scaled distance collapse onto one front --------------------------------------
+\nextgroupplot[
+  xlabel={scaled distance $(y+\Uup)/\reach$}, ylabel={coverage $\cov$},
+  xmin=0.5, xmax=1.42, ymin=0, ymax=1.12, ytick={0,0.5,1},
+]
+\addplot[sGuide] coordinates {(1,0) (1,1.12)};
+\pgfplotsinvokeforeach{100,125,150,175,200}{
+  \addplot[T#1, only marks, only={Td}{#1}] table[x=s, y=cov] {data/fig3_points.csv};
+}
+\panel{b}
+% ---- (c) front position against 1/GPC: the mass-balance line ------------------------------------------------------
+\nextgroupplot[
+  xlabel={$1/\gpc$ (cycle\,\AA$^{-1}$)}, ylabel={front position $\yfront$ (\si{cm})},
+  xmin=0.65, xmax=0.98, ymin=4.5, ymax=15.5,
+  legend style={at={(0.03,0.97)}, anchor=north west},
+]
+\addplot[name path=lo, draw=none, forget plot] table[x=invgpc, y=lo] {data/fig3_line.csv};
+\addplot[name path=hi, draw=none, forget plot] table[x=invgpc, y=hi] {data/fig3_line.csv};
+\addplot[fill=cMuted, fill opacity=0.25, draw=none] fill between[of=lo and hi];
+\addplot[cInk2, line width=0.7pt] table[x=invgpc, y=y] {data/fig3_line.csv};
+\addplot[cObs, mark=*, mark size=1.4pt, only marks,
+          error bars/.cd, y dir=both, y explicit,
+          error bar style={line width=0.5pt}, error mark options={rotate=90, mark size=1.5pt}]
+  table[x=invgpc, y=front, y error=sd] {data/fig3_fronts_fit.csv};
+% 225 C: front not resolved on the wafer, excluded from the line (250 C: not resolved at all, not drawn)
+\addplot[cMuted, mark=o, mark size=1.4pt, only marks,
+          error bars/.cd, y dir=both, y explicit, error bar style={line width=0.4pt, densely dotted}]
+  table[x=invgpc, y=front, y error=sd] {data/fig3_fronts_excl.csv};
+\legend{90\,\% band, $\yfront = C/\gpc - \Uup$, \SIrange{100}{200}{\celsius}, \SI{225}{\celsius} (excl.)}
+\node[anchor=south east, font=\scriptsize, align=right, text=cInk2] at (rel axis cs:0.98,0.03)
+  {$\chisq = \pgfmathprintnumber[fixed, precision=2]{\chisqv}$ on \pgfmathprintnumber{\dofv} dof\\
+   $\reach\gpc$ CV \pgfmathprintnumber[fixed, precision=1]{\cvv}\,\%};
+\panel{c}
+\end{groupplot}
+\figcheck{fig3}
+\end{tikzpicture}
+\end{document}

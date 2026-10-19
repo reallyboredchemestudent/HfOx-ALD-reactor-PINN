@@ -1,0 +1,14 @@
+gap 1.0 cm, mean speed 179 cm/s, sticking 0.02432, D 214.0 cm^2/s, reach 16 cm, width 0.9 cm
+
+[A] /home/rayan/ald_cases/A/1.700015: coverage = 'value' on patch 'substrate' of field 'cov' (480 faces; uniform faces along 24 cm (no C/Cx field found)); other candidates: [('Exp1', 'value'), ('N1', 'value'), ('beta', 'value')]
+  1. vs steady exposure, nominal dose: max |dtheta| 0.2021 (3.032 nm)
+  2. matched mass (reach 17.15 cm vs nominal 16): max |dtheta| 0.0016 (0.024 nm)
+  3. depth-averaged steady fit: reach 17.21 cm, width 0.824 cm, dispersion 1.707 cm (D/u 1.196); worst misfit 0.0006 (0.009 nm)
+
+[B_dt4] /home/rayan/ald_cases/B/1.549991: coverage = 'value' on patch 'substrate' of field 'cov' (480 faces; uniform faces along 24 cm (no C/Cx field found)); other candidates: [('Exp1', 'value'), ('N1', 'value'), ('beta', 'value')]
+  1. vs steady exposure, nominal dose: max |dtheta| 0.2039 (3.058 nm)
+  2. matched mass (reach 17.16 cm vs nominal 16): max |dtheta| 0.0016 (0.024 nm)
+  3. depth-averaged steady fit: reach 17.22 cm, width 0.823 cm, dispersion 1.708 cm (D/u 1.196); worst misfit 0.0006 (0.009 nm)
+
+4. case vs case (equal dose): the exposure reduction predicts no difference
+  B_dt4 vs A: max |dtheta| 0.0018 (0.027 nm)

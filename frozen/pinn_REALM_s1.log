@@ -1,0 +1,66 @@
+WARNING:2026-10-16 21:53:53,555:jax._src.xla_bridge:794: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+[seed 1] measured budget from 20 saturated wafers: site signature (%) [-3.68, -2.8, -2.83, -2.16, -1.82, -1.1, 5.03, 4.26, 5.11], run scatter 3.30 %, site scatter 0.193 nm
+[seed 1] loaded /home/rayan/hfox_local/results/pinnjax_pre_REAL_1.npy
+[seed 1] hold -1 (none: all data)
+  stage 0: loss 2.203 pde 4.24e-02 inlet 1.12e-02 data chi2 257.6 w 1/1 phys [ 2.382 -0.955 -0.028 -1.25   1.639  1.219 -0.222]
+  stage 1: loss 1.791 pde 3.19e-02 inlet 6.21e-03 data chi2 217.1 w 4.3/0.97 phys [ 2.34  -1.188  0.015 -0.879  1.731  1.217 -0.223]
+  stage 2: loss 1.64 pde 2.87e-02 inlet 1.72e-03 data chi2 212.5 w 13/0.92 phys [ 2.319 -1.157 -0.007 -0.883  1.943  1.22  -0.212]
+  stage 3: loss 1.566 pde 2.84e-02 inlet 1.51e-03 data chi2 198.6 w 23/0.91 phys [ 2.338e+00 -1.297e+00 -2.000e-03 -7.190e-01  2.031e+00  1.218e+00
+ -2.160e-01]
+  stage 4: loss 1.452 pde 2.58e-02 inlet 9.62e-04 data chi2 193.9 w 38/0.86 phys [ 2.337 -1.204 -0.02  -0.774  2.045  1.22  -0.21 ]
+  stage 5: loss 1.358 pde 2.36e-02 inlet 8.56e-04 data chi2 194.5 w 50/0.8 phys [ 2.344 -1.242 -0.012 -0.733  2.084  1.219 -0.213]
+  stage 6: loss 1.331 pde 2.32e-02 inlet 8.22e-04 data chi2 188.8 w 50/0.8 phys [ 2.356 -1.243 -0.032 -0.682  2.205  1.22  -0.208]
+  stage 7: loss 1.292 pde 2.18e-02 inlet 8.45e-04 data chi2 187.9 w 50/0.8 phys [ 2.366 -1.291 -0.032 -0.657  2.308  1.219 -0.21 ]
+[seed 1] hold -1 done 124 s: data chi2 187.9 on 225, pde 2.18e-02, phys [ 2.366 -1.291 -0.032 -0.657  2.308  1.219 -0.21 ]
+[seed 1] hold 0 (100 C dep / 55 C source)
+  stage 0: loss 2.102 pde 3.97e-02 inlet 1.19e-02 data chi2 246.6 w 1/1 phys [ 2.47  -1.017 -0.004 -1.181  2.359  1.219 -0.208]
+  stage 1: loss 1.689 pde 3.11e-02 inlet 8.58e-03 data chi2 187.3 w 2.6/1.1 phys [ 2.411 -1.456  0.082 -0.741  2.516  1.215 -0.215]
+  stage 2: loss 1.534 pde 2.65e-02 inlet 2.41e-03 data chi2 185.9 w 6.6/0.99 phys [ 2.41  -1.363  0.046 -0.696  2.82   1.219 -0.201]
+  stage 3: loss 1.47 pde 2.50e-02 inlet 1.47e-03 data chi2 184.6 w 17/0.95 phys [ 2.411 -1.412  0.044 -0.71   2.834  1.218 -0.204]
+  stage 4: loss 1.436 pde 2.40e-02 inlet 1.12e-03 data chi2 183.1 w 25/0.94 phys [ 2.414 -1.465  0.04  -0.616  3.043  1.219 -0.199]
+  stage 5: loss 1.368 pde 2.29e-02 inlet 8.27e-04 data chi2 179.4 w 35/0.91 phys [ 2.416 -1.541  0.058 -0.541  3.032  1.218 -0.203]
+  stage 6: loss 1.311 pde 2.18e-02 inlet 6.80e-04 data chi2 180.1 w 50/0.85 phys [ 2.418 -1.539  0.035 -0.488  3.092  1.22  -0.197]
+  stage 7: loss 1.255 pde 2.06e-02 inlet 7.01e-04 data chi2 180.0 w 50/0.82 phys [ 2.439 -1.547  0.039 -0.464  3.326  1.218 -0.203]
+[seed 1] hold 0 done 118 s: data chi2 180.0 on 216, pde 2.06e-02, phys [ 2.439 -1.547  0.039 -0.464  3.326  1.218 -0.203]
+[seed 1] hold 5 (125 C dep / 55 C source)
+  stage 0: loss 1.836 pde 3.46e-02 inlet 7.07e-03 data chi2 213.1 w 1/1 phys [ 2.373 -0.945 -0.023 -1.331  1.986  1.218 -0.212]
+  stage 1: loss 1.543 pde 2.50e-02 inlet 1.90e-03 data chi2 200.3 w 11/0.96 phys [ 2.34  -0.97  -0.013 -1.03   1.949  1.217 -0.215]
+  stage 2: loss 1.443 pde 2.29e-02 inlet 7.37e-04 data chi2 196.8 w 35/0.9 phys [ 2.362 -1.05  -0.015 -0.87   2.178  1.219 -0.208]
+  stage 3: loss 1.345 pde 2.02e-02 inlet 6.67e-04 data chi2 197.9 w 50/0.84 phys [ 2.363 -1.135  0.008 -0.78   2.207  1.22  -0.204]
+  stage 4: loss 1.277 pde 1.95e-02 inlet 5.73e-04 data chi2 196.8 w 50/0.8 phys [ 2.374e+00 -1.131e+00 -1.000e-03 -8.110e-01  2.374e+00  1.218e+00
+ -2.070e-01]
+  stage 5: loss 1.21 pde 1.83e-02 inlet 6.45e-04 data chi2 196.5 w 50/0.75 phys [ 2.383 -1.161  0.004 -0.776  2.456  1.218 -0.208]
+  stage 6: loss 1.152 pde 1.76e-02 inlet 5.62e-04 data chi2 196.0 w 50/0.7 phys [ 2.391e+00 -1.149e+00  1.000e-03 -7.570e-01  2.564e+00  1.219e+00
+ -2.060e-01]
+  stage 7: loss 1.103 pde 1.68e-02 inlet 5.88e-04 data chi2 197.0 w 50/0.67 phys [ 2.398 -1.147  0.004 -0.738  2.585  1.219 -0.205]
+[seed 1] hold 5 done 124 s: data chi2 197.0 on 216, pde 1.68e-02, phys [ 2.398 -1.147  0.004 -0.738  2.585  1.219 -0.205]
+[seed 1] hold 10 (150 C dep / 55 C source)
+  stage 0: loss 1.934 pde 3.05e-02 inlet 1.02e-02 data chi2 254.7 w 1/1 phys [ 2.41  -0.827 -0.092 -0.869  1.714  1.216 -0.223]
+  stage 1: loss 1.63 pde 2.19e-02 inlet 5.84e-03 data chi2 235.4 w 4/0.95 phys [ 2.291 -0.877 -0.059 -0.762  0.866  1.215 -0.225]
+  stage 2: loss 1.565 pde 1.90e-02 inlet 1.16e-03 data chi2 231.7 w 12/0.97 phys [ 2.249 -0.964 -0.06  -0.52   0.982  1.216 -0.219]
+  stage 3: loss 1.459 pde 1.76e-02 inlet 7.18e-04 data chi2 228.6 w 30/0.91 phys [ 2.229 -1.014 -0.041 -0.497  0.755  1.216 -0.217]
+  stage 4: loss 1.399 pde 1.63e-02 inlet 4.76e-04 data chi2 226.4 w 50/0.88 phys [ 2.222 -1.105 -0.047 -0.361  0.772  1.216 -0.219]
+  stage 5: loss 1.331 pde 1.56e-02 inlet 4.89e-04 data chi2 225.7 w 50/0.83 phys [ 2.213 -1.095 -0.044 -0.413  0.727  1.216 -0.217]
+  stage 6: loss 1.283 pde 1.49e-02 inlet 4.70e-04 data chi2 226.3 w 50/0.8 phys [ 2.214 -1.094 -0.051 -0.374  0.712  1.216 -0.219]
+  stage 7: loss 1.22 pde 1.43e-02 inlet 4.82e-04 data chi2 226.0 w 50/0.75 phys [ 2.209 -1.082 -0.051 -0.391  0.673  1.216 -0.219]
+[seed 1] hold 10 done 125 s: data chi2 226.0 on 216, pde 1.43e-02, phys [ 2.209 -1.082 -0.051 -0.391  0.673  1.216 -0.219]
+[seed 1] hold 15 (175 C dep / 55 C source)
+  stage 0: loss 1.916 pde 3.10e-02 inlet 1.36e-02 data chi2 235.2 w 1/1 phys [ 2.356 -0.685 -0.095 -1.44   1.253  1.222 -0.21 ]
+  stage 1: loss 1.465 pde 2.34e-02 inlet 3.43e-03 data chi2 192.6 w 3.9/0.95 phys [ 2.298 -0.758 -0.091 -0.899  1.18   1.217 -0.223]
+  stage 2: loss 1.341 pde 2.06e-02 inlet 1.60e-03 data chi2 189.1 w 11/0.88 phys [ 2.295 -0.745 -0.1   -0.865  1.429  1.219 -0.218]
+  stage 3: loss 1.314 pde 1.88e-02 inlet 1.35e-03 data chi2 184.9 w 23/0.9 phys [ 2.281 -0.815 -0.089 -0.767  1.315  1.218 -0.218]
+  stage 4: loss 1.25 pde 1.77e-02 inlet 7.07e-04 data chi2 184.1 w 45/0.85 phys [ 2.284 -0.833 -0.094 -0.637  1.352  1.22  -0.215]
+  stage 5: loss 1.214 pde 1.71e-02 inlet 7.01e-04 data chi2 182.5 w 50/0.83 phys [ 2.286 -0.852 -0.094 -0.62   1.385  1.218 -0.219]
+  stage 6: loss 1.156 pde 1.64e-02 inlet 6.09e-04 data chi2 182.7 w 50/0.79 phys [ 2.278 -0.847 -0.096 -0.631  1.296  1.219 -0.217]
+  stage 7: loss 1.103 pde 1.59e-02 inlet 6.14e-04 data chi2 182.0 w 50/0.74 phys [ 2.283 -0.873 -0.092 -0.592  1.359  1.218 -0.218]
+[seed 1] hold 15 done 127 s: data chi2 182.0 on 216, pde 1.59e-02, phys [ 2.283 -0.873 -0.092 -0.592  1.359  1.218 -0.218]
+[seed 1] hold 20 (200 C dep / 55 C source)
+  stage 0: loss 2.119 pde 3.73e-02 inlet 1.71e-02 data chi2 251.5 w 1/1 phys [ 2.384 -0.794 -0.111 -1.321  1.616  1.214 -0.23 ]
+  stage 1: loss 1.97 pde 3.30e-02 inlet 9.01e-03 data chi2 224.3 w 3.8/1.1 phys [ 2.356 -1.055 -0.118 -0.703  1.819  1.214 -0.223]
+  stage 2: loss 1.698 pde 2.87e-02 inlet 2.06e-03 data chi2 211.2 w 13/0.97 phys [ 2.288 -1.008 -0.114 -0.825  1.862  1.216 -0.22 ]
+  stage 3: loss 1.593 pde 2.64e-02 inlet 1.12e-03 data chi2 205.6 w 31/0.93 phys [ 2.309 -1.165 -0.11  -0.5    2.007  1.214 -0.222]
+  stage 4: loss 1.515 pde 2.38e-02 inlet 9.84e-04 data chi2 204.5 w 50/0.89 phys [ 2.286 -1.098 -0.104 -0.617  1.894  1.216 -0.218]
+  stage 5: loss 1.392 pde 2.25e-02 inlet 6.75e-04 data chi2 198.5 w 50/0.84 phys [ 2.296 -1.202 -0.108 -0.438  1.97   1.215 -0.218]
+  stage 6: loss 1.311 pde 2.05e-02 inlet 7.00e-04 data chi2 199.3 w 50/0.79 phys [ 2.288 -1.149 -0.102 -0.546  1.826  1.215 -0.22 ]
+  stage 7: loss 1.251 pde 2.00e-02 inlet 6.57e-04 data chi2 191.9 w 50/0.77 phys [ 2.286 -1.2   -0.107 -0.431  1.849  1.215 -0.217]
+[seed 1] hold 20 done 145 s: data chi2 191.9 on 216, pde 2.00e-02, phys [ 2.286 -1.2   -0.107 -0.431  1.849  1.215 -0.217]

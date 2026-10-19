@@ -1,0 +1,13 @@
+{
+ "note": "SHA-256 of every results/ file the figure data were exported from",
+ "python": "3.13.16",
+ "numpy": "2.5.3",
+ "inputs": {
+  "aldfoam_dtcheck/aldfoam_compare.csv": "76eca433feae15b69509e271efd0db384d3998935347a3c13b1d127be7a865ff",
+  "aldfoam_gap0.5/aldfoam_compare.csv": "8294ba666435dea6e1ab93c0c5b58d445e92b1bac61d9958244cbeed10c5d803",
+  "aldfoam_gap1.0/aldfoam_compare.csv": "e699922aef9eb42b4672bfd3f3be1de56322f682ffa9f833500b49d2dc3dd227",
+  "aldfoam_gap1.0/aldfoam_compare.txt": "151d06fcc784196d55b240ac921005421607e7fe08066d1af54d7bea09671616",
+  "collapse_points.csv": "70d0ba9187dbe376b672ad15d76681e239b1b40583aa1f88788bcd48518726dd",
+  "collapse_summary.json": "c276a7b6593891b89a2d2089c5438aacbb4c137320465c06bddf78073020d12e"
+ }
+}

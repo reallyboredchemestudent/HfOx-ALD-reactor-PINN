@@ -1,0 +1,69 @@
+% Fig. 4. The textbook error budget fails on the real wafers; the budget measured on the saturated wafers works.
+% (a, b) chi^2 of every wafer's 9 sites under the ideal (instrument-only) and the measured budget, same colour scale;
+% (c) the site signature: raw relative deviation of every saturated wafer's sites, and the calibrated signature.
+% Data: data/fig4_*.csv  (code/export_figdata.py fig4  <-  results/per_wafer_td100-200.csv, fit_td100-200.json,
+%       recal_per_wafer_td100-200.csv, recal_fit_td100-200.json; raw deviations from results/real_Y.npz)
+\documentclass{standalone}
+\input{figstyle}
+\pgfplotstableread[col sep=comma]{data/fig4_stats.csv}\stats
+\pgfplotstablegetelem{0}{ideal}\of\stats\let\chiI\pgfplotsretval
+\pgfplotstablegetelem{0}{measured}\of\stats\let\chiM\pgfplotsretval
+\pgfplotstablegetelem{0}{ndata}\of\stats\let\nd\pgfplotsretval
+\pgfplotstablegetelem{0}{nflag_ideal}\of\stats\let\nfI\pgfplotsretval
+\pgfplotstablegetelem{0}{nflag_measured}\of\stats\let\nfM\pgfplotsretval
+\pgfplotstablegetelem{0}{sigr}\of\stats\let\sigr\pgfplotsretval
+\pgfplotstablegetelem{0}{sigd}\of\stats\let\sigd\pgfplotsretval
+% light-to-medium single-hue ramp so that black cell labels stay legible on every cell
+\pgfplotsset{colormap={chi}{rgb=(0.969,0.984,1.000) rgb=(0.871,0.922,0.969) rgb=(0.776,0.859,0.937)
+                             rgb=(0.620,0.792,0.882) rgb=(0.420,0.682,0.839) rgb=(0.259,0.573,0.776)}}
+\pgfplotsset{
+  heat/.style={
+    width=1.05in, height=1.62in, colormap name=chi, point meta min=0, point meta max=3.6,
+    xmin=52.5, xmax=77.5, ymin=87.5, ymax=262.5, y dir=reverse,
+    xtick={55,60,65,70,75}, ytick={100,125,150,175,200,225,250},
+    xlabel={$\Tsrc$ (\si{\celsius})}, tick style={draw=none}, axis line style={draw=none},
+    nodes near coords style={font=\tiny, inner sep=0pt, anchor=center, text=black},
+    enlargelimits=false,
+    title style={at={(0.5,1)}, anchor=south, xshift=0pt, align=center, font=\scriptsize},
+  },
+}
+\newcommand{\heatmap}[1]{%
+  \addplot[matrix plot*, mesh/cols=5, point meta=explicit, draw=white, line width=0.6pt,
+           visualization depends on={\thisrow{#1} \as \chiv},
+           nodes near coords={\pgfmathprintnumber[fixed, precision=0, 1000 sep={}]{\chiv}}]
+    table[x=Tp, y=Td, meta=l#1] {data/fig4_chi2.csv};
+  \draw[cInk2, line width=0.6pt, densely dashed] (axis cs:52.5,212.5) -- (axis cs:77.5,212.5);}
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=3 by 1, horizontal sep=0.32in}, table/col sep=comma]
+% ---- (a) ideal budget ---------------------------------------------------------------------------------------------
+\nextgroupplot[heat, ylabel={$\Tdep$ (\si{\celsius})},
+  title={ideal budget\\$\chisq = \pgfmathprintnumber[fixed, precision=0, 1000 sep={\mathord{,}}]{\chiI}$ on \pgfmathprintnumber{\nd}}]
+\heatmap{ideal}
+\node[panel] at (rel axis cs:0,1) [xshift=-3.0em, yshift=2.6em] {(a)};
+% ---- (b) measured budget ------------------------------------------------------------------------------------------
+\nextgroupplot[heat, yticklabels={}, colorbar right,
+  title={measured budget\\$\chisq = \pgfmathprintnumber[fixed, precision=0]{\chiM}$ on \pgfmathprintnumber{\nd}},
+  colorbar style={width=0.07in, ytick={0,1,2,3}, yticklabels={1,10,100,1000}, ylabel={wafer $\chisq$ (9 sites)},
+    ylabel style={font=\scriptsize}, yticklabel style={font=\tiny}, extra y ticks={1.4453},
+    extra y tick labels={}, extra y tick style={major tick length=0.07in, tick style={draw=cFail, line width=0.9pt}},
+    axis line style={draw=cInk2}}]
+\heatmap{measured}
+\node[panel] at (rel axis cs:0,1) [xshift=-1.9em, yshift=2.6em] {(b)};
+% ---- (c) site signature -------------------------------------------------------------------------------------------
+\nextgroupplot[width=1.95in, height=1.62in, xshift=0.78in,
+  xmin=0.5, xmax=9.5, ymin=-9, ymax=10, xtick={1,...,9}, ytick={-5,0,5,10},
+  xticklabels={4.5,6,6,7.5,7.5,7.5,9,9,10.5}, xlabel={site position $y$ along the flow (\si{cm})},
+  ylabel={site $-$ wafer mean (\si{\percent})}, ymajorgrids,
+  legend style={at={(0.02,0.98)}, anchor=north west}]
+\addplot[sGuide] coordinates {(0.5,0) (9.5,0)};
+\addplot[only marks, mark=-, mark size=2.2pt, cMuted, line width=0.5pt] table[x=pos, y=dev] {data/fig4_sigraw.csv};
+\addplot[cFV, line width=0.9pt, mark=square*, mark size=1.5pt] table[x=pos, y=sig] {data/fig4_sig.csv};
+\legend{, each saturated wafer, calibrated signature}
+\node[anchor=south east, font=\scriptsize, text=cInk2, align=right] at (rel axis cs:0.98,0.03)
+  {run scatter \pgfmathprintnumber[fixed, precision=1]{\sigr}\,\%;\; site scatter \pgfmathprintnumber[fixed, precision=2]{\sigd}\,nm};
+\panel{c}
+\end{groupplot}
+\figcheck{fig4}
+\end{tikzpicture}
+\end{document}

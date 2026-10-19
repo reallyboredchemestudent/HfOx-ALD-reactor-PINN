@@ -1,0 +1,6 @@
+gap 0.5 cm, mean speed 358 cm/s, sticking 0.02432, D 214.0 cm^2/s, reach 16 cm, width 0.9 cm
+
+[D] /home/rayan/ald_cases/D/1.700003: coverage = 'value' on patch 'substrate' of field 'cov' (480 faces; uniform faces along 24 cm (no C/Cx field found)); other candidates: [('Exp1', 'value'), ('N1', 'value'), ('beta', 'value')]
+  1. vs steady exposure, nominal dose: max |dtheta| 0.1169 (1.753 nm)
+  2. matched mass (reach 16.56 cm vs nominal 16): max |dtheta| 0.0007 (0.010 nm)
+  3. depth-averaged steady fit: reach 16.61 cm, width 0.880 cm, dispersion 0.731 cm (D/u 0.598); worst misfit 0.0003 (0.005 nm)

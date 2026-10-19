@@ -13,3 +13,5 @@ code/recovery_*.npy
 code/break_*.npz
 code/breakfit_*.npz
 *.log
+!frozen/*.log
+paper/figures/build/

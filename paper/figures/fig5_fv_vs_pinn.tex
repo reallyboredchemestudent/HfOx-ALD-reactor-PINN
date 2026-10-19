@@ -1,0 +1,63 @@
+% Fig. 5. The PINN fits better and predicts worse.
+% (a) the five dose-limited (55 C source) wafers, each held out of training in turn: measured thickness at the 9 sites
+%     (ordered along the flow), with the FV and the PINN-ensemble medians and 90 % prediction intervals, both under the
+%     measured error budget; (b) per-wafer RMSE; (c) every ensemble member's fit to the training wafers (all data)
+%     against its own error on the held-out wafers.
+% Data: data/fig5_*.csv  (code/export_figdata.py fig5  <-  results/recal_compare_sites_REALM.csv,
+%       recal_compare_REALM.csv, pinn_REALM_s*_h*.npz, recal_fit_td100-200.json)
+\documentclass{standalone}
+\input{figstyle}
+\pgfplotstableread[col sep=comma]{data/fig5_wafers.csv}\waf
+\pgfplotsset{
+  wafer/.style={width=0.86in, height=1.35in, xmin=0.4, xmax=9.6, ymin=-7, ymax=19, xtick={1,5,9},
+    xticklabels={4.5,7.5,10.5}, ytick={0,5,10,15}, table/col sep=comma,
+    title style={at={(0.5,1)}, anchor=south, xshift=0pt, font=\scriptsize, align=center}},
+  ebar/.style={error bars/.cd, y dir=both, y explicit, error mark=none, error bar style={line width=0.5pt, solid}},
+}
+% one held-out wafer: #1 = deposition temperature, #2 = row of fig5_wafers.csv
+\newcommand{\heldout}[2]{%
+  \pgfplotstablegetelem{#2}{fv_rmse}\of\waf\let\fr\pgfplotsretval
+  \pgfplotstablegetelem{#2}{pinn_rmse}\of\waf\let\pr\pgfplotsretval
+  \addplot[sGuide, forget plot] coordinates {(0.4,0) (9.6,0)};
+  \addplot[cFV, only marks, mark=square*, mark size=1.1pt, ebar]
+    table[x expr=\thisrow{pos}-0.2, y=pred, y error plus=ehi, y error minus=elo] {data/fig5_sites_fv_#1.csv};
+  \addplot[cPINN, only marks, mark=triangle*, mark size=1.5pt, ebar]
+    table[x expr=\thisrow{pos}+0.2, y=pred, y error plus=ehi, y error minus=elo] {data/fig5_sites_pinn_#1.csv};
+  \addplot[sObs] table[x=pos, y=obs] {data/fig5_sites_fv_#1.csv};
+  \node[font=\tiny, anchor=north east, align=right, inner sep=1pt] at (rel axis cs:0.98,0.98)
+    {\textcolor{cFV}{\pgfmathprintnumber[fixed, zerofill, precision=1]{\fr}}\,/\,\textcolor{cPINN}{\pgfmathprintnumber[fixed, zerofill, precision=1]{\pr}}\,nm};}
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=5 by 1, horizontal sep=0.1in, y descriptions at=edge left}, wafer]
+\nextgroupplot[title={\SI{100}{\celsius}}, ylabel={thickness (\si{nm})}]
+\heldout{100}{0}
+\node[panel] at (rel axis cs:0,1) [xshift=-2.6em, yshift=1.3em] {(a)};
+\nextgroupplot[title={\SI{125}{\celsius}}]\heldout{125}{1}
+\nextgroupplot[title={\SI{150}{\celsius}}, xlabel={site position $y$ along the flow (\si{cm})}]\heldout{150}{2}
+\nextgroupplot[title={\SI{175}{\celsius}}]\heldout{175}{3}
+\nextgroupplot[title={\SI{200}{\celsius}}, legend style={at={(1.05,1)}, anchor=north west}]
+\heldout{200}{4}
+\legend{\FV, \PINN, measured}
+\end{groupplot}
+% ---- (b) per-wafer RMSE -------------------------------------------------------------------------------------------
+\begin{axis}[name=B, at={(group c1r1.south west)}, anchor=north west, yshift=-0.55in, width=1.75in, height=1.2in,
+  xmin=90, xmax=210, ymin=0, ymax=4.5, xtick={100,125,150,175,200}, xlabel={held-out wafer, $\Tdep$ (\si{\celsius})},
+  ylabel={held-out RMSE (\si{nm})}, table/col sep=comma, legend style={at={(0.98,0.98)}, anchor=north east}]
+\addplot[sFV] table[x=Td, y=fv_rmse] {data/fig5_wafers.csv};
+\addplot[sPINN] table[x=Td, y=pinn_rmse] {data/fig5_wafers.csv};
+\legend{\FV, \PINN\ ensemble}
+\node[panel] at (rel axis cs:0,1) [xshift=-2.6em, yshift=1.1em] {(b)};
+\end{axis}
+% ---- (c) fit against prediction, every member ---------------------------------------------------------------------
+\begin{axis}[name=C, at={(B.outer north east)}, anchor=outer north west, xshift=0.15in, width=2.5in, height=1.2in,
+  xmin=150, xmax=480, ymin=0, ymax=6, xlabel={training-data $\chisq$ (225 sites; lower fits better)},
+  ylabel={held-out RMSE (\si{nm})}, table/col sep=comma, legend style={at={(0.02,0.02)}, anchor=south west, fill=white, fill opacity=0.85, text opacity=1}]
+\addplot[only marks, mark=triangle, mark size=1.7pt, cPINN] table[x=chi2, y=rmse] {data/fig5_members.csv};
+\addplot[only marks, mark=triangle*, mark size=2.6pt, cPINN] table[x=chi2, y=rmse] {data/fig5_ens.csv};
+\addplot[only marks, mark=square*, mark size=2.0pt, cFV] table[x=chi2, y=rmse] {data/fig5_fv.csv};
+\legend{\PINN\ member, \PINN\ ensemble median, \FV}
+\node[panel] at (rel axis cs:0,1) [xshift=-2.6em, yshift=1.1em] {(c)};
+\end{axis}
+\figcheck{fig5}
+\end{tikzpicture}
+\end{document}

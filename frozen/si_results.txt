@@ -1,0 +1,32 @@
+
+=== model 1  plug flow, one profile ===
+assess_identifiability (parameters and initial states):
+   w(t)       => globally
+   a          => globally
+identifiable functions (with states): a, w(t)
+time 37.3 s
+
+=== model 2  with axial dispersion, one profile ===
+assess_identifiability (parameters and initial states):
+   w(t)       => globally
+   v(t)       => globally
+   a          => globally
+   b          => globally
+identifiable functions (with states): b, a, v(t), w(t)
+time 0.4 s
+
+=== model 3  plug flow, explicit reach E = exp(lam/zb) and offset q = exp((y+U)/zb), one dose ===
+assess_identifiability (parameters and initial states):
+   q(t)       => nonidentifiable
+   E          => nonidentifiable
+   a          => globally
+identifiable functions (with states): a, q(t)//(E - 1)
+time 0.3 s
+
+=== model 4  plug flow, two doses at one deposition temperature (dose ratio 2: E2 = E^2) ===
+assess_identifiability (parameters and initial states):
+   q(t)       => globally
+   E          => globally
+   a          => globally
+identifiable functions (with states): a, E, q(t)
+time 0.4 s

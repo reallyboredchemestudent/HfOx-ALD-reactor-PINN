@@ -5,6 +5,10 @@
 # Steps: check selfcheck synthpinn load collapse fit howo extrap pinn compare julia collect
 #        recal pinnm comparem   (FV and PINN with the error budget measured on the saturated wafers: budget.py)
 #        window                 (process window from the calibrated FV fit: run after recal)
+#        fitregime              (only the regime fit of 'fit': what the figures need)
+#        si                     (profile likelihood of U and the broken-assumption fits, into results/si/)
+#        frozen                 (copy the workstation-only outputs in frozen/ into results/, never overwriting)
+#        figdata                (export the paper figures' data: paper/figures/data/, with checks)
 # Settings (environment): CSV=path/to.csv  REGIME=100-200  JOBS=<parallel fits>  SEEDS=0-9
 set -euo pipefail      # stop at the first failed step: a later step must never run on a missing or failed input
 ROOT="$(cd "$(dirname "$0")" && pwd)"; CODE="$ROOT/code"; RES="$ROOT/results"; LOGS="$RES/logs"; mkdir -p "$LOGS"
@@ -48,6 +52,16 @@ for s in $STEPS; do
     pinnm)     run pinnm python pinn_jax.py run --data "$RES/real_Y.npz" --tag REALM --pre-tag REAL --budget measured --seeds "$SEEDS" --holds=-1,55 --td "$REGIME" --jobs "$JOBS" --out "$RES" ;;
     comparem)  run comparem python recalibrated.py compare --td "$REGIME" --tag REALM --seeds "$SEEDS" ;;
     window)    run window python process_window.py --jobs "$JOBS" ;;
+    fitregime) run fit_regime python run_real.py fit --td "$REGIME" --jobs "$JOBS" ;;
+    si)        mkdir -p "$RES/si"
+               run si_profile bash -c "cd '$RES/si' && python '$CODE/profile_lik.py' '$CODE/synthA_rep0.npz' U 2,4,6,8,10,12,14,16,18,20,24"
+               for c in nominal second_order flow_spike pool_unpurged mediated surface_cvd; do
+                 run "si_break_$c" bash -c "cd '$RES/si' && python '$CODE/run_breaks.py' $c"
+               done ;;
+    frozen)    # outputs that need JAX, OpenFOAM or Julia, produced on a workstation (see frozen/README.md)
+               ( cd "$ROOT/frozen" && find . -type f ! -name README.md -print0 | while IFS= read -r -d '' f; do
+                   mkdir -p "$RES/$(dirname "$f")"; [ -e "$RES/$f" ] || cp "$f" "$RES/$f"; done ) ;;
+    figdata)   run figdata python export_figdata.py --results "$RES" ;;
     julia)     if command -v julia > /dev/null; then run julia julia identifiability.jl && cp "$CODE/si_results.txt" "$RES/"
                else echo "julia not on PATH: skipping (see SETUP.md section 3)"; fi ;;
     collect)   ( cd "$ROOT" && python -m zipfile -c results.zip results ) && echo "archived: $ROOT/results.zip" ;;

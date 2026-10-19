@@ -1,0 +1,76 @@
+% Every figure at its final size on the paper's page (article, 10 pt, 1 in margins: \textwidth = 6.5 in), included
+% WITHOUT scaling, with draft captions. Build: make preview  ->  build/preview.pdf
+% Captions state what is drawn and how to read it; numbers stay in the figures (read from data/), not typed here.
+\documentclass[10pt]{article}
+\usepackage[letterpaper, margin=1in]{geometry}
+\usepackage{graphicx,amsmath,amssymb,siunitx,caption,xcolor}
+\captionsetup{font=small, labelfont=bf}
+\input{notation}
+\newcommand{\fig}[2]{\begin{figure}[p]\centering\includegraphics{build/#1.pdf}\caption{#2}\end{figure}}
+\renewcommand{\thefigure}{\arabic{figure}}
+\begin{document}
+\section*{Figures (draft captions)}
+Main text: Figs.~1--7 below are the plan's Figs.~1, 3, 4, 5, 6, 7, 8. Supplement: Figs.~S1, S2 are the plan's Figs.~2, 9.
+A figure stamped ``CHECK \dots'' has a check that failed; see \texttt{data/checks.csv}.
+
+\fig{fig1_reduction}{\textbf{The pulsed reactor reduces exactly to a steady exposure equation.}
+(a)~Integrating the gas transport over one pulse and purge turns the pulsed problem into a steady one for the exposure
+$\expo$; three pulses that deliver the same dose (B, A, C) must then give the same final coverage.
+(b)~Final wall coverage from aldFoam (OpenFOAM-10, transient, gap-resolved) for the three pulses, with the steady
+exposure solution at the nominal dose and at the dose aldFoam actually delivered (matched mass).
+(c)~Differences, as nm of a \SI{15}{nm} saturated film. Case B is shown at a quarter of the default time step; at the
+default step it is not converged in time.}
+
+\fig{fig3_massbalance}{\textbf{The real wafers obey mass balance.}
+(a)~Coverage measured at the nine sites of the five dose-limited wafers (\SI{55}{\celsius} source).
+(b)~The same points against distance scaled by each wafer's reach collapse onto one front.
+(c)~Front position against inverse growth per cycle: mass balance predicts a straight line, $\yfront = C/\gpc - \Uup$
+(band: 90\,\%). The \SI{225}{\celsius} front is not resolved on the wafer and is excluded; at \SI{250}{\celsius}
+no front is resolved.}
+
+\fig{fig4_errorbudget}{\textbf{The textbook error budget fails on real wafers; the measured one works.}
+(a,\,b)~$\chisq$ of each wafer's nine sites under the instrument-only budget and under the budget measured on the
+saturated wafers (same colour scale; red tick on the colour bar: $p=0.001$ for 9 sites). Below the dashed line:
+wafers not used in the fit.
+(c)~The site signature: each saturated wafer's site-to-mean deviation (dashes) and the calibrated signature.}
+
+\fig{fig5_fv_vs_pinn}{\textbf{The PINN fits better and predicts worse.}
+(a)~Each dose-limited wafer held out of training in turn: measured thickness, and the \FV\ and \PINN-ensemble
+medians with 90\,\% prediction intervals, both under the measured budget (numbers: held-out RMSE, \FV\,/\,\PINN).
+(b)~Held-out RMSE per wafer. (c)~Every ensemble member's $\chisq$ on the training wafers against its error on the
+held-out wafers: members fit the training data better than the \FV\ model and predict held-out wafers worse.}
+
+\fig{fig6_extrapolation}{\textbf{Extrapolation to deposition temperatures the fit never saw.}
+(a)~Observed against predicted thickness at \SIrange{225}{250}{\celsius} from the \FV\ fit on
+\SIrange{100}{200}{\celsius}, with 90\,\% prediction intervals.
+(b)~Each site's error in units of its own interval half-width; inside the shaded band the measurement lies inside
+the 90\,\% interval.}
+
+\fig{fig7_window}{\textbf{Domain of applicability and process window.}
+(a)~Design: wafers fitted, held out one at a time, and never seen.
+(b)~Dose needed for coverage $\cov \geq 0.98$, as a multiple of the \SI{55}{\celsius}-source dose (bands 5--95\,\%):
+at the nine measured sites and on the whole \SI{100}{mm} wafer; the setpoint adds a margin for run-to-run dose scatter,
+labelled with its source temperature at a \SI{0.2}{s} pulse. Shaded: extrapolated temperatures.
+(c,\,d)~Model coverage on the whole wafer at \SI{100}{\celsius} for the measured dose and the setpoint dose; $+$:
+measured sites; dashed: the across-flow range in which the inlet profile is constrained.}
+
+\fig{fig8_failures}{\textbf{Where the model fails.}
+(a)~Standardised residual of every site under the measured budget; rows are wafers (source temperature
+\SIrange{55}{75}{\celsius} within each deposition temperature), columns sites along the flow; below the dashed line,
+wafers the fit never saw; triangles: wafers flagged at $p < 0.001$.
+(b)~Synthetic wafers with one assumption of the reduction broken, fitted with the steady model: the worst wafer's
+$\chisq$. A case passes unflagged if its bar stays left of the dashed line.}
+
+\renewcommand{\thefigure}{S\arabic{figure}}\setcounter{figure}{0}
+\fig{figS2_identifiability}{\textbf{One dose fixes only the front position.}
+(a)~Profile likelihood of the upstream reactive length on synthetic data at Lee et al.'s design.
+(b)~Normalised singular values of the coverage sensitivity to ($\ln\reach$, $\ln\zb$, $\ln\disp$, $\Uup$): one dose
+is rank deficient; a second dose at the same temperature restores full rank.
+(c)~Exact verdicts from StructuralIdentifiability.jl.}
+
+\fig{figS9_pinn}{\textbf{PINN diagnostics} (measured budget, all training wafers, ten seeds).
+(a--c)~Data $\chisq$, PDE residual and inlet residual at the end of each training stage.
+(d)~Each member's physics parameters relative to the \FV\ estimate, in its standard deviations.
+(e)~$|r|$, the PDE residual of one member at \SI{100}{\celsius}\,/\,\SI{55}{\celsius}, with that condition's
+collocation points and the member's own 50\,\% coverage front.}
+\end{document}

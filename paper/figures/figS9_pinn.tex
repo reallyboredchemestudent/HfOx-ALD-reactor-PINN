@@ -1,0 +1,64 @@
+% Fig. S9 (supplement). PINN diagnostics, measured budget, all training wafers (hold-out none), 10 seeds.
+% (a-c) the three loss terms at the end of each of the 8 training stages (per-iteration losses were not recorded);
+% (d) each member's fitted physics parameters, in standard deviations of the FV estimate;
+% (e) |PDE residual| of seed 0 at 100 C / 55 C source on a grid, with that condition's collocation points (+) and the
+%     member's own 50 % coverage front (dashed).
+% Data: data/fig9_*.csv, data/fig9_resid.png  (code/export_figdata.py fig9  <-  results/pinn_REALM_s*.log,
+%       pinn_REALM_s*_h-1.npz, recal_fit_td100-200.json; the residual is evaluated with code/pinn.py, NumPy)
+\documentclass{standalone}
+\input{figstyle}
+\input{data/cmap_greys}
+\pgfplotstableread[col sep=comma]{data/fig9_resid_meta.csv}\meta
+\pgfplotstablegetelem{0}{xmin}\of\meta\let\rxa\pgfplotsretval
+\pgfplotstablegetelem{0}{xmax}\of\meta\let\rxb\pgfplotsretval
+\pgfplotstablegetelem{0}{ymin}\of\meta\let\rya\pgfplotsretval
+\pgfplotstablegetelem{0}{ymax}\of\meta\let\ryb\pgfplotsretval
+\pgfplotsset{
+  stage/.style={width=1.38in, height=1.2in, xmin=-0.3, xmax=7.3, xtick={0,...,7}, xlabel={training stage},
+    table/col sep=comma},
+  member/.style={cPINN!55, line width=0.5pt, mark=none},
+}
+\newcommand{\members}[1]{%
+  \pgfplotsinvokeforeach{0,...,9}{\addplot[member, only={seed}{##1}] table[x=stage, y=#1] {data/fig9_stages.csv};}}
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=3 by 1, horizontal sep=0.6in}]
+\nextgroupplot[stage, ylabel={data $\chisq$ (225 sites)}, ymin=150, ymax=480]
+\members{chi2}
+\pgfplotstableread[col sep=comma]{data/fig9_fv.csv}\fvt
+\pgfplotstablegetelem{0}{chi2}\of\fvt\let\fvchi\pgfplotsretval
+\addplot[cFV, line width=0.9pt, densely dashed] coordinates {(-0.3,\fvchi) (7.3,\fvchi)};
+\node[font=\tiny, text=cFV, anchor=north east] at (axis cs:7.2,\fvchi) {\FV, same data};
+\panel{a}
+\nextgroupplot[stage, ylabel={PDE residual (mean $r^2$)}, ymode=log, ymin=0.01, ymax=0.1]
+\members{pde}
+\panel{b}
+\nextgroupplot[stage, ylabel={inlet residual (mean $r^2$)}, ymode=log, ymin=1e-4, ymax=0.05]
+\members{inlet}
+\panel{c}
+\end{groupplot}
+% ---- (d) physics parameters -------------------------------------------------------------------------------------
+\begin{axis}[at={(group c1r1.south west)}, anchor=north west, yshift=-0.62in, width=3.2in, height=1.35in,
+  xmin=0.5, xmax=7.5, ymin=-22, ymax=6, xtick={1,...,7},
+  xticklabels={$\ln\reach$, $\ln\zb$, $E_a$, $\ln\disp$, $\Uup$, $\gpc_0$, $\gpc_1$},
+  ylabel={(\PINN $-$ \FV) / sd$_{\FV}$}, ymajorgrids, ytick={-20,-10,-3,0,3}, table/col sep=comma]
+\addplot[fill=cMuted, fill opacity=0.2, draw=none] coordinates {(0.5,-3) (7.5,-3) (7.5,3) (0.5,3)} -- cycle;
+\addplot[sGuide] coordinates {(0.5,0) (7.5,0)};
+\addplot[only marks, mark=triangle*, mark size=1.6pt, cPINN, fill opacity=0.8, draw opacity=0.9] table[x=k, y=z] {data/fig9_phys.csv};
+\node[panel] at (rel axis cs:0,1) [xshift=-2.6em, yshift=1.1em] {(d)};
+\node[font=\scriptsize, text=cInk2, anchor=south east] at (rel axis cs:0.99,0.02) {shaded: within 3 sd of the \FV\ fit};
+\end{axis}
+% ---- (e) residual field -----------------------------------------------------------------------------------------
+\begin{axis}[at={(group c3r1.south east)}, anchor=north east, yshift=-0.62in, width=1.15in, height=1.35in,
+  axis equal image, xmin=\rxa, xmax=\rxb, ymin=\rya, ymax=\ryb, xlabel={$x$ (\si{cm})}, ylabel={$y$ (\si{cm})},
+  colormap name=greys, point meta min=-3, point meta max=0, colorbar right,
+  colorbar style={width=0.06in, ytick={-3,-2,-1,0}, yticklabels={$10^{-3}$,$10^{-2}$,$10^{-1}$,$1$}, ylabel={$|r|$},
+    yticklabel style={font=\tiny}, ylabel style={font=\scriptsize}}, table/col sep=comma]
+\addplot graphics[xmin=\rxa, xmax=\rxb, ymin=\rya, ymax=\ryb] {data/fig9_resid.png};
+\addplot[only marks, mark=*, mark size=0.75pt, mark options={fill=cPINN, draw=white, line width=0.25pt}] table[x=x, y=y] {data/fig9_colloc.csv};
+\addplot[white, line width=1.0pt, densely dashed] table[x=x, y=y] {data/fig9_front50.csv};
+\node[panel] at (rel axis cs:0,1) [xshift=-2.6em, yshift=1.1em] {(e)};
+\end{axis}
+\figcheck{fig9}
+\end{tikzpicture}
+\end{document}
